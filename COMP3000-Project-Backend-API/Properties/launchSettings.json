@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "COMP3000_Project_Backend_API": {
-      "commandName": "Project",
-      "commandLineArgs": "--port 7107",
-      "launchBrowser": false
-    }
-  }
-}
