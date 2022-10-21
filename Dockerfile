@@ -3,7 +3,7 @@ WORKDIR /source
 
 COPY . .
 
-RUN [ "dotnet", "restore", "/source/COMP3000-Project-Backend-API/COMP3000-Project-Backend-API" ]
+RUN [ "dotnet", "restore", "/source/COMP3000-Project-Backend-API/COMP3000-Project-Backend-API.csproj" ]
 
 WORKDIR /source/COMP3000-Project-Backend-API
 RUN [ "dotnet", "publish", "-c", "Release", "-o", "/app", "--no-restore" ]
