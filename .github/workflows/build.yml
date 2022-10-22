@@ -1,9 +1,9 @@
 
-name: Publish to Google Artifact Registry
+name: Push and deploy
 
 on:
   push:
-    branches: [ main, CYFP-3-aspnet ]
+    branches: [ main ]
 
 jobs:
   build:
