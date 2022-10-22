@@ -38,4 +38,4 @@ jobs:
         with:
           service: backend
           image: europe-west2-docker.pkg.dev/comp3000-air-quality/comp3000-docker/backend:latest
-          region: europe-west-1
+          region: europe-west1

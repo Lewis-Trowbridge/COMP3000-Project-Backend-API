@@ -1,0 +1,7 @@
+README.md
+.github/
+.gitignore
+.gitattributes
+.vscode/
+COMP3000-Project-Backend-API/bin/
+COMP3000-Project-Backend-API/obj/
