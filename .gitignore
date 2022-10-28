@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 
 .vscode/
+COMP3000-Project-Backend-API/appsettings.Development.json
