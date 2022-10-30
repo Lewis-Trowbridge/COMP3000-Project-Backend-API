@@ -1,5 +1,5 @@
+using COMP3000_Project_Backend_API.Models;
 using COMP3000_Project_Backend_API.Models.MongoDB;
-using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace COMP3000_Project_Backend_API.Services;
@@ -11,6 +11,10 @@ public class MetadataService {
         _metadataCollection = metadataCollection;
     }
 
-    public async Task<List<DEFRAMetadata>> GetAsync() =>
-        await _metadataCollection.Find(_ => true).ToListAsync();
+    public async Task<List<DEFRAMetadata>> GetAsync(BoundingBox bbox)
+    {
+        var filterBuilder = Builders<DEFRAMetadata>.Filter;
+        var filter = filterBuilder.GeoWithinBox(x => x.Coords, bbox.BottomLeftX, bbox.BottomLeftY, bbox.TopRightX, bbox.TopRightY);
+        return await (await _metadataCollection.FindAsync(filter)).ToListAsync();
+    }
 }

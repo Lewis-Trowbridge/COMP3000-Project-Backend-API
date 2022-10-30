@@ -13,9 +13,4 @@ public class AirQualityController: ControllerBase {
     public AirQualityController(MetadataService metadataService) {
         _metadataService = metadataService;
     }
-
-    [HttpGet]
-    public async Task<List<DEFRAMetadata>> GetMetadata() {
-        return await _metadataService.GetAsync();
-    } 
 }
