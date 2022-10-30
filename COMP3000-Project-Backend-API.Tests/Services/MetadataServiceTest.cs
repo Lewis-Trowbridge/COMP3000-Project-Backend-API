@@ -32,5 +32,40 @@ namespace COMP3000_Project_Backend_API.Tests.Services
 
             mockCollection.Verify(x => x.FindAsync(It.Is<FilterDefinition<DEFRAMetadata>>(actual => actual.ToJson(typeof(FilterDefinition<DEFRAMetadata>), default, default, default, default) == expectedFilter.ToJson(typeof(FilterDefinition<DEFRAMetadata>), default, default, default, default)), It.IsAny<FindOptions<DEFRAMetadata>>(), It.IsAny<CancellationToken>()), Times.Once());
         }
+
+        [Fact]
+        public async void MetadataService_GetAsync_ReturnsListOfMetadata()
+        {
+            var mockCollection = new Mock<IMongoCollection<DEFRAMetadata>>();
+            var mockAsyncCursor = new Mock<IAsyncCursor<DEFRAMetadata>>();
+
+            var testBbox = new BoundingBox(0, 0, 0, 0);
+            var testFilter = Builders<DEFRAMetadata>.Filter.GeoWithinBox(x => x.Coords, 0, 0, 0, 0);
+            var expectedMetadata = new List<DEFRAMetadata>()
+            {
+                new DEFRAMetadata()
+                {
+                    Id = "ABD",
+                    SiteName = "Aberdeen",
+                    StartDate = DateTime.MinValue,
+                    EndDate = DateTime.MaxValue,
+                    Coords = new double[]{ 0, 0 }
+                }
+            };
+
+            mockAsyncCursor.SetupSequence(x => x.MoveNext(It.IsAny<CancellationToken>())).Returns(true).Returns(false);
+            mockAsyncCursor.SetupSequence(x => x.MoveNextAsync(It.IsAny<CancellationToken>())).ReturnsAsync(true).ReturnsAsync(false);
+            mockAsyncCursor.SetupGet(x => x.Current).Returns(expectedMetadata);
+
+            mockCollection.Setup(x => x.FindAsync(It.IsAny<FilterDefinition<DEFRAMetadata>>(), It.IsAny<FindOptions<DEFRAMetadata>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(mockAsyncCursor.Object);
+
+
+            var service = new MetadataService(mockCollection.Object);
+
+            var actual = await service.GetAsync(testBbox);
+
+            actual.Should().BeEquivalentTo(expectedMetadata);
+        }
     }
 }
