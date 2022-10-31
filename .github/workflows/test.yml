@@ -1,0 +1,16 @@
+
+name: Test
+
+on:
+ push:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.x.x'
+
+      - run: dotnet test
