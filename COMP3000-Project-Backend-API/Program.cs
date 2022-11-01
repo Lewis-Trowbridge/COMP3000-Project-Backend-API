@@ -16,6 +16,12 @@ builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("Mo
 builder.Services.AddSingleton<IMongoCollection<DEFRAMetadata>>(MetadataCollectionFactory.GetMongoCollection);
 builder.Services.AddSingleton<MetadataService>();
 
+builder.Services.AddHttpClient<DEFRACsvService>(client =>
+{
+    client.BaseAddress = new Uri("https://uk-air.defra.gov.uk/datastore/data_files/site_data/");
+});
+builder.Services.AddSingleton<DEFRACsvService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
