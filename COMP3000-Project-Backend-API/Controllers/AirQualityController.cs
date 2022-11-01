@@ -9,8 +9,11 @@ namespace COMP3000_Project_Backend_API.Controllers;
 [Route("api/[controller]")]
 public class AirQualityController: ControllerBase {
     private readonly MetadataService _metadataService;
+    private readonly DEFRACsvService _defraCsvService;
 
-    public AirQualityController(MetadataService metadataService) {
+    public AirQualityController(MetadataService metadataService, DEFRACsvService defraCsvService)
+    {
         _metadataService = metadataService;
+        _defraCsvService = defraCsvService;
     }
 }
