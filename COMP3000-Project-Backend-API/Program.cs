@@ -1,3 +1,4 @@
+using COMP3000_Project_Backend_API;
 using COMP3000_Project_Backend_API.Factories;
 using COMP3000_Project_Backend_API.Models.MongoDB;
 using COMP3000_Project_Backend_API.Services;
@@ -18,7 +19,7 @@ builder.Services.AddSingleton<MetadataService>();
 
 builder.Services.AddHttpClient<DEFRACsvService>(client =>
 {
-    client.BaseAddress = new Uri("https://uk-air.defra.gov.uk/datastore/data_files/site_data/");
+    client.BaseAddress = new Uri(Constants.DEFRABaseAddress);
 });
 builder.Services.AddSingleton<DEFRACsvService>();
 

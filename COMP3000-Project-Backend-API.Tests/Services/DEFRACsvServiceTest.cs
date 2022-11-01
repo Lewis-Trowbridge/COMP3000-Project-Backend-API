@@ -7,18 +7,16 @@ namespace COMP3000_Project_Backend_API.Tests.Services
 {
     public class DEFRACsvServiceTest
     {
-        private readonly string baseAddress = "https://uk-air.defra.gov.uk/datastore/data_files/site_data/";
-
         [Fact]
         public async void DEFRACsvService_Get_MakesCorrectHttpRequest()
         {
-            var testStationId = "test";
-            var testAddress = baseAddress + testStationId;
+            var testStationId = "test_PM25.csv";
+            var testAddress = Constants.DEFRABaseAddress + $"{testStationId}_PM25_2022.csv";
             var handler = new Mock<HttpMessageHandler>();
-            handler.SetupRequest(HttpMethod.Get, testAddress).ReturnsResponse(System.Net.HttpStatusCode.OK);
+            handler.SetupRequest(HttpMethod.Get, testAddress).ReturnsResponse(System.Net.HttpStatusCode.OK, "");
 
             var client = handler.CreateClient();
-            client.BaseAddress = new Uri(baseAddress);
+            client.BaseAddress = new Uri(Constants.DEFRABaseAddress);
             var service = new DEFRACsvService(client);
 
             var testMetadata = new DEFRAMetadata()
@@ -26,7 +24,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
                 Id = testStationId
             };
 
-            await service.GetAirQualityInfo(testMetadata);
+            await service.GetAirQualityInfo(testMetadata, DateTime.Now);
 
             handler.VerifyRequest(testAddress, Times.Once());
         }
@@ -35,12 +33,12 @@ namespace COMP3000_Project_Backend_API.Tests.Services
         public async void DEFRACsvService_Get_ReturnsEmptyObjectOn404()
         {
             var testStationId = "test";
-            var testAddress = baseAddress + testStationId;
+            var testAddress = Constants.DEFRABaseAddress + $"{testStationId}_PM25_2022.csv";
             var handler = new Mock<HttpMessageHandler>();
             handler.SetupRequest(HttpMethod.Get, testAddress).ReturnsResponse(System.Net.HttpStatusCode.NotFound);
 
             var client = handler.CreateClient();
-            client.BaseAddress = new Uri(baseAddress);
+            client.BaseAddress = new Uri(Constants.DEFRABaseAddress);
             var service = new DEFRACsvService(client);
 
             var testMetadata = new DEFRAMetadata()
@@ -50,7 +48,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
 
             var expected = new AirQualityInfo();
 
-            var actual = await service.GetAirQualityInfo(testMetadata);
+            var actual = await service.GetAirQualityInfo(testMetadata, DateTime.Now);
 
             actual.Should().BeEquivalentTo(expected);
         }
