@@ -16,4 +16,12 @@ public class AirQualityController: ControllerBase {
         _metadataService = metadataService;
         _defraCsvService = defraCsvService;
     }
+
+    [HttpGet]
+    public async Task<List<AirQualityInfo>> GetAirQuality(BoundingBox bbox)
+    {
+        var stations = await _metadataService.GetAsync(bbox);
+
+        return new List<AirQualityInfo>();
+    }
 }
