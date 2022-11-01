@@ -10,8 +10,9 @@ namespace COMP3000_Project_Backend_API.Tests.Services
         [Fact]
         public async void DEFRACsvService_Get_MakesCorrectHttpRequest()
         {
-            var testStationId = "test_PM25.csv";
-            var testAddress = Constants.DEFRABaseAddress + $"{testStationId}_PM25_2022.csv";
+            var testStationId = "test";
+            var testDateTime = DateTime.MinValue;
+            var testAddress = Constants.DEFRABaseAddress + $"{testStationId}_PM25_{testDateTime.Year}.csv";
             var handler = new Mock<HttpMessageHandler>();
             handler.SetupRequest(HttpMethod.Get, testAddress).ReturnsResponse(System.Net.HttpStatusCode.OK, "");
 
@@ -24,7 +25,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
                 Id = testStationId
             };
 
-            await service.GetAirQualityInfo(testMetadata, DateTime.Now);
+            await service.GetAirQualityInfo(testMetadata, testDateTime);
 
             handler.VerifyRequest(testAddress, Times.Once());
         }
@@ -33,7 +34,8 @@ namespace COMP3000_Project_Backend_API.Tests.Services
         public async void DEFRACsvService_Get_ReturnsEmptyObjectOn404()
         {
             var testStationId = "test";
-            var testAddress = Constants.DEFRABaseAddress + $"{testStationId}_PM25_2022.csv";
+            var testDateTime = DateTime.MinValue;
+            var testAddress = Constants.DEFRABaseAddress + $"{testStationId}_PM25_{testDateTime.Year}.csv";
             var handler = new Mock<HttpMessageHandler>();
             handler.SetupRequest(HttpMethod.Get, testAddress).ReturnsResponse(System.Net.HttpStatusCode.NotFound);
 
@@ -48,7 +50,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
 
             var expected = new AirQualityInfo();
 
-            var actual = await service.GetAirQualityInfo(testMetadata, DateTime.Now);
+            var actual = await service.GetAirQualityInfo(testMetadata, testDateTime);
 
             actual.Should().BeEquivalentTo(expected);
         }

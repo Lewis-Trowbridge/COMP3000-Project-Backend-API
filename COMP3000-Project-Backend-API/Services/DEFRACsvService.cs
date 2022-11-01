@@ -16,7 +16,7 @@ namespace COMP3000_Project_Backend_API.Services
 
         public async Task<AirQualityInfo> GetAirQualityInfo(DEFRAMetadata stationInfo, DateTime timestamp)
         {
-            var request = await _httpClient.GetAsync($"{stationInfo.Id}_PM25_2022.csv");
+            var request = await _httpClient.GetAsync($"{stationInfo.Id}_PM25_{timestamp.Year}.csv");
 
             if (!request.IsSuccessStatusCode)
             {
@@ -30,7 +30,7 @@ namespace COMP3000_Project_Backend_API.Services
                 
             }
 
-                return new AirQualityInfo();
+            return new AirQualityInfo();
 
         }
     }
