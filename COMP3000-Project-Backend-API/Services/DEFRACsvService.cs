@@ -16,6 +16,11 @@ namespace COMP3000_Project_Backend_API.Services
         {
             var request = await _httpClient.GetAsync(stationInfo.Id);
 
+            if (!request.IsSuccessStatusCode)
+            {
+                return new AirQualityInfo();
+            }
+
             return new AirQualityInfo();
 
         }

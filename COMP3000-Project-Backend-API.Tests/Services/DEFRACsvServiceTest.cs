@@ -1,4 +1,5 @@
-﻿using COMP3000_Project_Backend_API.Models.MongoDB;
+﻿using COMP3000_Project_Backend_API.Models;
+using COMP3000_Project_Backend_API.Models.MongoDB;
 using COMP3000_Project_Backend_API.Services;
 using Moq.Contrib.HttpClient;
 
@@ -28,6 +29,30 @@ namespace COMP3000_Project_Backend_API.Tests.Services
             await service.GetAirQualityInfo(testMetadata);
 
             handler.VerifyRequest(testAddress, Times.Once());
+        }
+
+        [Fact]
+        public async void DEFRACsvService_Get_ReturnsEmptyObjectOn404()
+        {
+            var testStationId = "test";
+            var testAddress = baseAddress + testStationId;
+            var handler = new Mock<HttpMessageHandler>();
+            handler.SetupRequest(HttpMethod.Get, testAddress).ReturnsResponse(System.Net.HttpStatusCode.NotFound);
+
+            var client = handler.CreateClient();
+            client.BaseAddress = new Uri(baseAddress);
+            var service = new DEFRACsvService(client);
+
+            var testMetadata = new DEFRAMetadata()
+            {
+                Id = testStationId
+            };
+
+            var expected = new AirQualityInfo();
+
+            var actual = await service.GetAirQualityInfo(testMetadata);
+
+            actual.Should().BeEquivalentTo(expected);
         }
     }
 }
