@@ -19,7 +19,7 @@ builder.Services.AddSingleton<MetadataService>();
 
 builder.Services.AddHttpClient<DEFRACsvService>(client =>
 {
-    client.BaseAddress = new Uri(Constants.DEFRABaseAddress);
+    client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
 });
 builder.Services.AddSingleton<DEFRACsvService>();
 

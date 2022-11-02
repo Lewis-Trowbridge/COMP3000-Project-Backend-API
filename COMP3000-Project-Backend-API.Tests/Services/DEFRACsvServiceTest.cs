@@ -13,12 +13,12 @@ namespace COMP3000_Project_Backend_API.Tests.Services
         {
             var testStationId = "test";
             var testDateTime = DateTime.Parse("01-01-2022 04:00:00");
-            var testAddress = Constants.DEFRABaseAddress + $"{testStationId}_PM25_{testDateTime.Year}.csv";
+            var testAddress = DEFRACsvService.DEFRABaseAddress + $"{testStationId}_PM25_{testDateTime.Year}.csv";
             var handler = new Mock<HttpMessageHandler>();
             handler.SetupRequest(HttpMethod.Get, testAddress).ReturnsResponse(System.Net.HttpStatusCode.OK, ValidCSV);
 
             var client = handler.CreateClient();
-            client.BaseAddress = new Uri(Constants.DEFRABaseAddress);
+            client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
             var service = new DEFRACsvService(client);
 
             var testMetadata = new DEFRAMetadata()
@@ -38,12 +38,12 @@ namespace COMP3000_Project_Backend_API.Tests.Services
         {
             var testStationId = "test";
             var testDateTime = DateTime.MinValue;
-            var testAddress = Constants.DEFRABaseAddress + $"{testStationId}_PM25_{testDateTime.Year}.csv";
+            var testAddress = DEFRACsvService.DEFRABaseAddress + $"{testStationId}_PM25_{testDateTime.Year}.csv";
             var handler = new Mock<HttpMessageHandler>();
             handler.SetupRequest(HttpMethod.Get, testAddress).ReturnsResponse(System.Net.HttpStatusCode.NotFound);
 
             var client = handler.CreateClient();
-            client.BaseAddress = new Uri(Constants.DEFRABaseAddress);
+            client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
             var service = new DEFRACsvService(client);
 
             var testMetadata = new DEFRAMetadata()
@@ -72,12 +72,12 @@ namespace COMP3000_Project_Backend_API.Tests.Services
             };
 
             var testDateTime = DateTime.Parse("07-01-2022 04:00:00", CultureInfo.GetCultureInfo("en-GB"));
-            var testAddress = Constants.DEFRABaseAddress + $"{testStationId}_PM25_{testDateTime.Year}.csv";
+            var testAddress = DEFRACsvService.DEFRABaseAddress + $"{testStationId}_PM25_{testDateTime.Year}.csv";
             var handler = new Mock<HttpMessageHandler>();
             handler.SetupRequest(HttpMethod.Get, testAddress).ReturnsResponse(System.Net.HttpStatusCode.OK, ValidCSV);
 
             var client = handler.CreateClient();
-            client.BaseAddress = new Uri(Constants.DEFRABaseAddress);
+            client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
             var service = new DEFRACsvService(client);
 
             var expected = new AirQualityInfo()
@@ -116,12 +116,12 @@ namespace COMP3000_Project_Backend_API.Tests.Services
             };
 
             var testDateTime = DateTime.Parse("07-01-2022 04:15:00", CultureInfo.GetCultureInfo("en-GB"));
-            var testAddress = Constants.DEFRABaseAddress + $"{testStationId}_PM25_{testDateTime.Year}.csv";
+            var testAddress = DEFRACsvService.DEFRABaseAddress + $"{testStationId}_PM25_{testDateTime.Year}.csv";
             var handler = new Mock<HttpMessageHandler>();
             handler.SetupRequest(HttpMethod.Get, testAddress).ReturnsResponse(System.Net.HttpStatusCode.OK, ValidCSV);
 
             var client = handler.CreateClient();
-            client.BaseAddress = new Uri(Constants.DEFRABaseAddress);
+            client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
             var service = new DEFRACsvService(client);
 
             var expected = new AirQualityInfo()
@@ -160,12 +160,12 @@ namespace COMP3000_Project_Backend_API.Tests.Services
             };
 
             var testDateTime = DateTime.Parse("07-01-2022 03:30:00", CultureInfo.GetCultureInfo("en-GB"));
-            var testAddress = Constants.DEFRABaseAddress + $"{testStationId}_PM25_{testDateTime.Year}.csv";
+            var testAddress = DEFRACsvService.DEFRABaseAddress + $"{testStationId}_PM25_{testDateTime.Year}.csv";
             var handler = new Mock<HttpMessageHandler>();
             handler.SetupRequest(HttpMethod.Get, testAddress).ReturnsResponse(System.Net.HttpStatusCode.OK, ValidCSV);
 
             var client = handler.CreateClient();
-            client.BaseAddress = new Uri(Constants.DEFRABaseAddress);
+            client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
             var service = new DEFRACsvService(client);
 
             var expected = new AirQualityInfo()
@@ -205,12 +205,12 @@ namespace COMP3000_Project_Backend_API.Tests.Services
             };
 
             var testDateTime = DateTime.Parse("07-01-2022 03:45:00", CultureInfo.GetCultureInfo("en-GB"));
-            var testAddress = Constants.DEFRABaseAddress + $"{testStationId}_PM25_{testDateTime.Year}.csv";
+            var testAddress = DEFRACsvService.DEFRABaseAddress + $"{testStationId}_PM25_{testDateTime.Year}.csv";
             var handler = new Mock<HttpMessageHandler>();
             handler.SetupRequest(HttpMethod.Get, testAddress).ReturnsResponse(System.Net.HttpStatusCode.OK, ValidCSV);
 
             var client = handler.CreateClient();
-            client.BaseAddress = new Uri(Constants.DEFRABaseAddress);
+            client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
             var service = new DEFRACsvService(client);
 
             var expected = new AirQualityInfo()
