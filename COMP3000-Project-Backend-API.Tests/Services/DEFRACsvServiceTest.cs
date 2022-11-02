@@ -2,6 +2,7 @@
 using COMP3000_Project_Backend_API.Models.MongoDB;
 using COMP3000_Project_Backend_API.Services;
 using Moq.Contrib.HttpClient;
+using System.Globalization;
 
 namespace COMP3000_Project_Backend_API.Tests.Services
 {
@@ -70,7 +71,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
                 Coords = testStationCoords
             };
 
-            var testDateTime = DateTime.Parse("07-01-2022 04:00:00");
+            var testDateTime = DateTime.Parse("07-01-2022 04:00:00", CultureInfo.GetCultureInfo("en-GB"));
             var testAddress = Constants.DEFRABaseAddress + $"{testStationId}_PM25_{testDateTime.Year}.csv";
             var handler = new Mock<HttpMessageHandler>();
             handler.SetupRequest(HttpMethod.Get, testAddress).ReturnsResponse(System.Net.HttpStatusCode.OK, ValidCSV);
