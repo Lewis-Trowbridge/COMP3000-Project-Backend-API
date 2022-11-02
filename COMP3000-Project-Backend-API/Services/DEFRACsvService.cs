@@ -12,6 +12,7 @@ namespace COMP3000_Project_Backend_API.Services
         private readonly HttpClient _httpClient;
 
         public static string PM25Unit { get; } = "PM2.5";
+        public static string LicenseString { get; } = "© Crown copyright 2021 Defra via uk-air.defra.gov.uk, licensed under the Open Government Licence.";
 
         public DEFRACsvService(HttpClient httpClient)
         {
@@ -65,7 +66,7 @@ namespace COMP3000_Project_Backend_API.Services
                 Value = value,
                 Timestamp = timestamp,
                 Unit = PM25Unit,
-                LicenseInfo = "",
+                LicenseInfo = LicenseString,
                 Station = new Station()
                 {
                     Name = metadata.SiteName,

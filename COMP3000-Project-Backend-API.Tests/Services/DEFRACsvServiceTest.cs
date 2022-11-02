@@ -84,7 +84,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
                 Value = 3.396F,
                 Unit = DEFRACsvService.PM25Unit,
                 Timestamp = testDateTime,
-                LicenseInfo = "",
+                LicenseInfo = DEFRACsvService.LicenseString,
                 Station = new Station()
                 {
                     Name = testStationName,
