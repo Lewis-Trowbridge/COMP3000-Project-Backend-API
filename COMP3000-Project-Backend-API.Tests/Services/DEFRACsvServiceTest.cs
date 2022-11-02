@@ -102,8 +102,141 @@ namespace COMP3000_Project_Backend_API.Tests.Services
             actual.Should().BeEquivalentTo(expected);
         }
 
+        [Fact]
+        public async void DEFRACsvService_Get_ReturnsValidResultWithBeforeHalfPast()
+        {
+            var testStationId = "WREX";
+            var testStationName = "Wrexham";
+            var testStationCoords = new double[] { 51.5106748, -0.1355159 };
+            var testMetadata = new DEFRAMetadata()
+            {
+                Id = testStationId,
+                SiteName = testStationName,
+                Coords = testStationCoords
+            };
 
-        private static string ValidCSV = @"
+            var testDateTime = DateTime.Parse("07-01-2022 04:15:00", CultureInfo.GetCultureInfo("en-GB"));
+            var testAddress = Constants.DEFRABaseAddress + $"{testStationId}_PM25_{testDateTime.Year}.csv";
+            var handler = new Mock<HttpMessageHandler>();
+            handler.SetupRequest(HttpMethod.Get, testAddress).ReturnsResponse(System.Net.HttpStatusCode.OK, ValidCSV);
+
+            var client = handler.CreateClient();
+            client.BaseAddress = new Uri(Constants.DEFRABaseAddress);
+            var service = new DEFRACsvService(client);
+
+            var expected = new AirQualityInfo()
+            {
+                Value = 3.396F,
+                Unit = DEFRACsvService.PM25Unit,
+                Timestamp = testDateTime,
+                LicenseInfo = DEFRACsvService.LicenseString,
+                Station = new Station()
+                {
+                    Name = testStationName,
+                    Coordinates = new LatLong()
+                    {
+                        Lat = testStationCoords[1],
+                        Lng = testStationCoords[0]
+                    }
+                }
+            };
+
+            var actual = await service.GetAirQualityInfo(testMetadata, testDateTime);
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+        [Fact]
+        public async void DEFRACsvService_Get_ReturnsValidResultAtHalfPast()
+        {
+            var testStationId = "WREX";
+            var testStationName = "Wrexham";
+            var testStationCoords = new double[] { 51.5106748, -0.1355159 };
+            var testMetadata = new DEFRAMetadata()
+            {
+                Id = testStationId,
+                SiteName = testStationName,
+                Coords = testStationCoords
+            };
+
+            var testDateTime = DateTime.Parse("07-01-2022 03:30:00", CultureInfo.GetCultureInfo("en-GB"));
+            var testAddress = Constants.DEFRABaseAddress + $"{testStationId}_PM25_{testDateTime.Year}.csv";
+            var handler = new Mock<HttpMessageHandler>();
+            handler.SetupRequest(HttpMethod.Get, testAddress).ReturnsResponse(System.Net.HttpStatusCode.OK, ValidCSV);
+
+            var client = handler.CreateClient();
+            client.BaseAddress = new Uri(Constants.DEFRABaseAddress);
+            var service = new DEFRACsvService(client);
+
+            var expected = new AirQualityInfo()
+            {
+                Value = 3.396F,
+                Unit = DEFRACsvService.PM25Unit,
+                Timestamp = testDateTime,
+                LicenseInfo = DEFRACsvService.LicenseString,
+                Station = new Station()
+                {
+                    Name = testStationName,
+                    Coordinates = new LatLong()
+                    {
+                        Lat = testStationCoords[1],
+                        Lng = testStationCoords[0]
+                    }
+                }
+            };
+
+            var actual = await service.GetAirQualityInfo(testMetadata, testDateTime);
+
+            actual.Should().BeEquivalentTo(expected);
+
+        }
+
+        [Fact]
+        public async void DEFRACsvService_Get_ReturnsValidResultWithAfterHalfPast()
+        {
+            var testStationId = "WREX";
+            var testStationName = "Wrexham";
+            var testStationCoords = new double[] { 51.5106748, -0.1355159 };
+            var testMetadata = new DEFRAMetadata()
+            {
+                Id = testStationId,
+                SiteName = testStationName,
+                Coords = testStationCoords
+            };
+
+            var testDateTime = DateTime.Parse("07-01-2022 03:45:00", CultureInfo.GetCultureInfo("en-GB"));
+            var testAddress = Constants.DEFRABaseAddress + $"{testStationId}_PM25_{testDateTime.Year}.csv";
+            var handler = new Mock<HttpMessageHandler>();
+            handler.SetupRequest(HttpMethod.Get, testAddress).ReturnsResponse(System.Net.HttpStatusCode.OK, ValidCSV);
+
+            var client = handler.CreateClient();
+            client.BaseAddress = new Uri(Constants.DEFRABaseAddress);
+            var service = new DEFRACsvService(client);
+
+            var expected = new AirQualityInfo()
+            {
+                Value = 3.396F,
+                Unit = DEFRACsvService.PM25Unit,
+                Timestamp = testDateTime,
+                LicenseInfo = DEFRACsvService.LicenseString,
+                Station = new Station()
+                {
+                    Name = testStationName,
+                    Coordinates = new LatLong()
+                    {
+                        Lat = testStationCoords[1],
+                        Lng = testStationCoords[0]
+                    }
+                }
+            };
+
+            var actual = await service.GetAirQualityInfo(testMetadata, testDateTime);
+
+            actual.Should().BeEquivalentTo(expected);
+
+        }
+
+        private static readonly string ValidCSV = @"
 Data supplied by UK-AIR on 1/11/2022
 All Data GMT hour ending  
 Rows begining ## are Provisional

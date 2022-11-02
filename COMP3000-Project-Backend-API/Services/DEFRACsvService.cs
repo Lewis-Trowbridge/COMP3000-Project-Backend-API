@@ -32,20 +32,18 @@ namespace COMP3000_Project_Backend_API.Services
             contentString = RemoveHeaderLines(contentString);
             contentString = RemoveProvisionalTags(contentString);
             var dateString = timestamp.ToString("dd-MM-yyyy");
-            var timeString = timestamp.Hour != 0 ? timestamp.ToString(" HH:00") : " 24:00";
+            var timeString = GetTimeString(timestamp);
 
-            using (var contentStringReader = new StringReader(contentString))
-            using (var csv = new CsvReader(contentStringReader, CultureInfo.InvariantCulture))
-            {
-                var records = csv.GetRecords<dynamic>();
-                var record = records
-                    .Select(x => x as IDictionary<string, object> ?? new Dictionary<string, object>() { { "   Date   ", "" } })
-                    .Single(x => x is not null && x["   Date   "].Equals(dateString))
-                    [timeString] ?? 0f;
-                var floatRecord = (record is string stringRecord) ? float.Parse(stringRecord) : (float)record;
+            using var contentStringReader = new StringReader(contentString);
+            using var csv = new CsvReader(contentStringReader, CultureInfo.InvariantCulture);
+            var records = csv.GetRecords<dynamic>();
+            var record = records
+                .Select(x => x as IDictionary<string, object> ?? new Dictionary<string, object>() { { "   Date   ", "" } })
+                .Single(x => x is not null && x["   Date   "].Equals(dateString))
+                [timeString] ?? 0f;
+            var floatRecord = (record is string stringRecord) ? float.Parse(stringRecord) : (float)record;
 
-                return AssembleAirQualityInfo(metadata, timestamp, floatRecord);
-            }
+            return AssembleAirQualityInfo(metadata, timestamp, floatRecord);
 
         }
 
@@ -57,6 +55,18 @@ namespace COMP3000_Project_Backend_API.Services
         private static string RemoveProvisionalTags(string csvString)
         {
             return csvString.Replace("##", "");
+        }
+
+        private static string GetTimeString(DateTime timestamp)
+        {
+            // Round up the hour if we are past half past
+            var hour = timestamp.Minute < 30 ? timestamp.Hour : timestamp.Hour + 1;
+            // Adjust for CSV's usage of 24th hour
+            if (hour == 0)
+            {
+                hour = 24;
+            }
+            return string.Format(" {0:00}:00", hour);
         }
 
         private static AirQualityInfo AssembleAirQualityInfo(DEFRAMetadata metadata, DateTime timestamp, float value)
