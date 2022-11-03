@@ -1,13 +1,11 @@
 using COMP3000_Project_Backend_API.Models;
 using COMP3000_Project_Backend_API.Models.MongoDB;
 using CsvHelper;
-using CsvHelper.Configuration;
-using System.Dynamic;
 using System.Globalization;
 
 namespace COMP3000_Project_Backend_API.Services
 {
-    public class DEFRACsvService
+    public class DEFRACsvService : IAirQualityService
     {
         private readonly HttpClient _httpClient;
 

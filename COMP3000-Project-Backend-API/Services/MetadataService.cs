@@ -4,7 +4,7 @@ using MongoDB.Driver;
 
 namespace COMP3000_Project_Backend_API.Services;
 
-public class MetadataService {
+public class MetadataService : IMetadataService {
     private readonly IMongoCollection<DEFRAMetadata> _metadataCollection;
 
     public MetadataService(IMongoCollection<DEFRAMetadata> metadataCollection) {

@@ -15,13 +15,13 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("Mongo"));
 builder.Services.AddSingleton<IMongoCollection<DEFRAMetadata>>(MetadataCollectionFactory.GetMongoCollection);
-builder.Services.AddSingleton<MetadataService>();
+builder.Services.AddSingleton<IMetadataService, MetadataService>();
 
 builder.Services.AddHttpClient<DEFRACsvService>(client =>
 {
     client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
 });
-builder.Services.AddSingleton<DEFRACsvService>();
+builder.Services.AddSingleton<IAirQualityService, DEFRACsvService>();
 
 var app = builder.Build();
 

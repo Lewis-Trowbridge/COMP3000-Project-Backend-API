@@ -9,20 +9,26 @@ namespace COMP3000_Project_Backend_API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 public class AirQualityController: ControllerBase {
-    private readonly MetadataService _metadataService;
-    private readonly DEFRACsvService _defraCsvService;
+    private readonly IMetadataService _metadataService;
+    private readonly IAirQualityService _airQualityService;
 
-    public AirQualityController(MetadataService metadataService, DEFRACsvService defraCsvService)
+    public AirQualityController(IMetadataService metadataService, IAirQualityService airQualityService)
     {
         _metadataService = metadataService;
-        _defraCsvService = defraCsvService;
+        _airQualityService = airQualityService;
     }
 
     [HttpGet]
-    public async Task<List<AirQualityInfo>> GetAirQuality(AirQualityRequest request)
+    public async Task<AirQualityInfo[]> GetAirQuality(AirQualityRequest request)
     {
         var stations = await _metadataService.GetAsync(request.Bbox!);
+        var tasks = new List<Task<AirQualityInfo>>();
 
-        return new List<AirQualityInfo>();
+        foreach (var station in stations)
+        {
+            tasks.Add(_airQualityService.GetAirQualityInfo(station, request.Timestamp));
+        }
+
+        return await Task.WhenAll(tasks);
     }
 }

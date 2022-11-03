@@ -2,6 +2,10 @@
 {
     public class BoundingBox
     {
+        public BoundingBox()
+        {
+
+        }
 
         public BoundingBox(double bottomLeftX, double bottomLeftY, double topRightX, double topRightY)
         {
