@@ -1,6 +1,7 @@
 ﻿using EphemeralMongo;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using System.Diagnostics;
 
 namespace COMP3000_Project_Backend_API.IntegrationTests.Support
 {
@@ -14,8 +15,8 @@ namespace COMP3000_Project_Backend_API.IntegrationTests.Support
         {
             var options = new MongoRunnerOptions()
             {
-                StandardOuputLogger = line => Console.WriteLine(line),
-                StandardErrorLogger = line => Console.WriteLine(line),
+                StandardOuputLogger = line => Debug.WriteLine(line),
+                StandardErrorLogger = line => Debug.WriteLine(line),
             };
             runner = MongoRunner.Run(options);
             mongoClient = new MongoClient(runner.ConnectionString);
