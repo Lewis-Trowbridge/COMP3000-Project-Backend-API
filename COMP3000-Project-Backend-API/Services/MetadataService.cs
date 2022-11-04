@@ -14,7 +14,7 @@ public class MetadataService : IMetadataService {
     public async Task<List<DEFRAMetadata>> GetAsync(BoundingBox bbox)
     {
         var filterBuilder = Builders<DEFRAMetadata>.Filter;
-        var filter = filterBuilder.GeoWithinBox(x => x.Coords, bbox.BottomLeftX, bbox.BottomLeftY, bbox.TopRightX, bbox.TopRightY);
+        var filter = filterBuilder.GeoWithinBox(x => x.Coords, bbox.BottomLeftY, bbox.BottomLeftX, bbox.TopRightY, bbox.TopRightX);
         return await (await _metadataCollection.FindAsync(filter)).ToListAsync();
     }
 }
