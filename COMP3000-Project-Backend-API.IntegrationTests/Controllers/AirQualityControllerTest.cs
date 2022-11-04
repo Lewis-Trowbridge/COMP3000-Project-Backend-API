@@ -5,7 +5,7 @@ using COMP3000_Project_Backend_API.Models.MongoDB;
 using COMP3000_Project_Backend_API.Models.Request;
 using COMP3000_Project_Backend_API.Services;
 using MongoDB.Driver;
-
+using System.Globalization;
 
 namespace COMP3000_Project_Backend_API.IntegrationTests.Controllers
 {
@@ -29,7 +29,7 @@ namespace COMP3000_Project_Backend_API.IntegrationTests.Controllers
         {
             var metadataService = new MetadataService(_collection);
             var airQualityService = new DEFRACsvService(SetupHttpClient());
-            var timestamp = DateTime.Parse("04-01-2022 01:00:00");
+            var timestamp = DateTime.Parse("04-01-2022 01:00:00", CultureInfo.GetCultureInfo("en-GB"));
             var controller = new AirQualityController(metadataService, airQualityService);
 
             var request = new AirQualityRequest()
@@ -95,7 +95,7 @@ namespace COMP3000_Project_Backend_API.IntegrationTests.Controllers
         // Tear down
         public void Dispose()
         {
-            //_mongoClient.DropDatabase("metadata");
+            _mongoClient.DropDatabase("metadata");
         }
 
         private static string ABDCSV = @"
