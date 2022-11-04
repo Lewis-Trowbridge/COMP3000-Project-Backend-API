@@ -28,7 +28,6 @@ namespace COMP3000_Project_Backend_API.IntegrationTests.Controllers
         [Fact]
         public async void AirQualityController_GetAirQuality_GetsValidData()
         {
-            var e = _collection.Find(_ => true).ToList();
             var metadataService = new MetadataService(_collection);
             var airQualityService = new DEFRACsvService(SetupHttpClient());
             var timestamp = DateTime.Parse("04-01-2022 01:00:00");
