@@ -1,4 +1,3 @@
-using COMP3000_Project_Backend_API;
 using COMP3000_Project_Backend_API.Factories;
 using COMP3000_Project_Backend_API.Models.MongoDB;
 using COMP3000_Project_Backend_API.Services;
@@ -17,10 +16,11 @@ builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("Mo
 builder.Services.AddSingleton<IMongoCollection<DEFRAMetadata>>(MetadataCollectionFactory.GetMongoCollection);
 builder.Services.AddSingleton<IMetadataService, MetadataService>();
 
-builder.Services.AddHttpClient<DEFRACsvService>(client =>
+builder.Services.AddHttpClient<IAirQualityService, DEFRACsvService>(client =>
 {
     client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
 });
+
 builder.Services.AddSingleton<IAirQualityService, DEFRACsvService>();
 
 var app = builder.Build();
@@ -39,3 +39,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }

@@ -1,4 +1,6 @@
-﻿namespace COMP3000_Project_Backend_API.Models
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace COMP3000_Project_Backend_API.Models
 {
     public class BoundingBox
     {

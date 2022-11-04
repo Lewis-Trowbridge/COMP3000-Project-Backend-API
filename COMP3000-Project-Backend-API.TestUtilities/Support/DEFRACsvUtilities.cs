@@ -7,6 +7,16 @@ namespace COMP3000_Project_Backend_API.TestUtilities.Support
     public static class DEFRAUCsvUtilities
     {
 
+        public static HttpMessageHandler GetHttpMessageHandler()
+        {
+            var handler = new Mock<HttpMessageHandler>();
+
+            handler.SetupRequest("https://uk-air.defra.gov.uk/datastore/data_files/site_pol_data/ABD_PM25_2022.csv").ReturnsResponse(System.Net.HttpStatusCode.OK, DEFRAUCsvUtilities.ABDCSV);
+            handler.SetupRequest("https://uk-air.defra.gov.uk/datastore/data_files/site_pol_data/ABD9_PM25_2022.csv").ReturnsResponse(System.Net.HttpStatusCode.OK, DEFRAUCsvUtilities.ABD9CSV);
+
+            return handler.Object;
+        }
+
         public static HttpClient SetupHttpClient()
         {
             var handler = new Mock<HttpMessageHandler>();

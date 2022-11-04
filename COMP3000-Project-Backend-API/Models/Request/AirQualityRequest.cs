@@ -1,4 +1,6 @@
-﻿namespace COMP3000_Project_Backend_API.Models.Request
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace COMP3000_Project_Backend_API.Models.Request
 {
     public class AirQualityRequest
     {
