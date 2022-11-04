@@ -22,13 +22,15 @@ public class AirQualityController: ControllerBase {
     public async Task<AirQualityInfo[]> GetAirQuality(AirQualityRequest request)
     {
         var stations = await _metadataService.GetAsync(request.Bbox!);
-        var tasks = new List<Task<AirQualityInfo>>();
+        var tasks = new List<Task<AirQualityInfo?>>();
 
         foreach (var station in stations)
         {
             tasks.Add(_airQualityService.GetAirQualityInfo(station, request.Timestamp));
         }
 
-        return await Task.WhenAll(tasks);
+        return (await Task.WhenAll(tasks))
+            .Where(x => x is not null)
+            .ToArray()!;
     }
 }
