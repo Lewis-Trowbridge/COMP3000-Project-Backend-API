@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace COMP3000_Project_Backend_API.Models
 {
@@ -17,9 +18,13 @@ namespace COMP3000_Project_Backend_API.Models
             TopRightY = topRightY;
         }
 
+        [Required]
         public double BottomLeftX { get; set; }
+        [Required]
         public double BottomLeftY { get; set; }
+        [Required]
         public double TopRightX { get; set; }
+        [Required]
         public double TopRightY { get; set; }
     }
 }
