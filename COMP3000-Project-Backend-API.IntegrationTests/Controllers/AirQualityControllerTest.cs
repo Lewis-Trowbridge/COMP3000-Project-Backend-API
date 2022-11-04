@@ -95,7 +95,7 @@ namespace COMP3000_Project_Backend_API.IntegrationTests.Controllers
         // Tear down
         public void Dispose()
         {
-            _mongoClient.DropDatabase("metadata");
+            //_mongoClient.DropDatabase("metadata");
         }
 
         private static string ABDCSV = @"
