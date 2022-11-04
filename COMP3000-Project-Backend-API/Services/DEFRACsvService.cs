@@ -18,7 +18,7 @@ namespace COMP3000_Project_Backend_API.Services
             _httpClient = httpClient;
         }
 
-        public async Task<AirQualityInfo> GetAirQualityInfo(DEFRAMetadata metadata, DateTime timestamp)
+        public async Task<AirQualityInfo?> GetAirQualityInfo(DEFRAMetadata metadata, DateTime timestamp)
         {
             var request = await _httpClient.GetAsync($"{metadata.Id}_PM25_{timestamp.Year}.csv");
 
@@ -37,10 +37,10 @@ namespace COMP3000_Project_Backend_API.Services
             using var csv = new CsvReader(contentStringReader, CultureInfo.InvariantCulture);
             var records = csv.GetRecords<dynamic>();
             var record = records
-                .Select(x => x as IDictionary<string, object> ?? new Dictionary<string, object>() { { "   Date   ", "" } })
-                .Single(x => x is not null && x["   Date   "].Equals(dateString))
-                [timeString] ?? 0f;
-            var floatRecord = (record is string stringRecord) ? float.Parse(stringRecord) : (float)record;
+                .Select(x => x as IDictionary<string, object>)
+                .SingleOrDefault(x => x is not null && x["   Date   "].Equals(dateString), new Dictionary<string, object>())!;
+
+            var floatRecord = (record.TryGetValue(timeString, out var stringRecord)) ? float.Parse((string)stringRecord) : -1f;
 
             return AssembleAirQualityInfo(metadata, timestamp, floatRecord);
 
@@ -68,8 +68,13 @@ namespace COMP3000_Project_Backend_API.Services
             return string.Format(" {0:00}:00", hour);
         }
 
-        private static AirQualityInfo AssembleAirQualityInfo(DEFRAMetadata metadata, DateTime timestamp, float value)
+        private static AirQualityInfo? AssembleAirQualityInfo(DEFRAMetadata metadata, DateTime timestamp, float value)
         {
+            if (value == -1)
+            {
+                return null;
+            }
+
             return new AirQualityInfo()
             {
                 Value = value,

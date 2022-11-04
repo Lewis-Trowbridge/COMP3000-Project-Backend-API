@@ -236,6 +236,33 @@ namespace COMP3000_Project_Backend_API.Tests.Services
 
         }
 
+        [Fact]
+        public async void DEFRACsvService_Get_ReturnsNullIfNotFoundInCSV()
+        {
+            var testStationId = "WREX";
+            var testStationName = "Wrexham";
+            var testStationCoords = new double[] { 51.5106748, -0.1355159 };
+            var testMetadata = new DEFRAMetadata()
+            {
+                Id = testStationId,
+                SiteName = testStationName,
+                Coords = testStationCoords
+            };
+
+            var testDateTime = DateTime.Parse("07-01-2011 04:00:00", CultureInfo.GetCultureInfo("en-GB"));
+            var testAddress = DEFRACsvService.DEFRABaseAddress + $"{testStationId}_PM25_{testDateTime.Year}.csv";
+            var handler = new Mock<HttpMessageHandler>();
+            handler.SetupRequest(HttpMethod.Get, testAddress).ReturnsResponse(System.Net.HttpStatusCode.OK, ValidCSV);
+
+            var client = handler.CreateClient();
+            client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
+            var service = new DEFRACsvService(client);
+
+            var actual = await service.GetAirQualityInfo(testMetadata, testDateTime);
+
+            actual.Should().BeNull();
+        }
+
         private static readonly string ValidCSV = @"
 Data supplied by UK-AIR on 1/11/2022
 All Data GMT hour ending  
