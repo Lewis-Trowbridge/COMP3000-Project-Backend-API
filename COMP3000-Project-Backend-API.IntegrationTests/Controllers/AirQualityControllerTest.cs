@@ -19,9 +19,8 @@ namespace COMP3000_Project_Backend_API.IntegrationTests.Controllers
         public AirQualityControllerTest(MongoDBFixture mongoDBFixture)
         {
             _mongoDBFixture = mongoDBFixture;
-            _mongoClient = _mongoDBFixture.mongoClient;
-            _mongoClient.GetDatabase("metadata").CreateCollection("metadata");
             mongoDBFixture.runner.Import("metadata", "metadata", "Assets/mongo.json", "--jsonArray");
+            _mongoClient = _mongoDBFixture.mongoClient;
             _collection = _mongoClient.GetDatabase("metadata").GetCollection<DEFRAMetadata>("metadata");
         }
 
