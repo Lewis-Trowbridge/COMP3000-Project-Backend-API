@@ -1,5 +1,4 @@
 ﻿using EphemeralMongo;
-using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using System.Diagnostics;
 
