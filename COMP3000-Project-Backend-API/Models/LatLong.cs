@@ -1,7 +1,7 @@
-namespace COMP3000_Project_Backend_API;
+namespace COMP3000_Project_Backend_API.Models;
 
 public class LatLong
 {
-    public float lat;
-    public float lng;
+    public double Lat { get; set; }
+    public double Lng { get; set; }
 }

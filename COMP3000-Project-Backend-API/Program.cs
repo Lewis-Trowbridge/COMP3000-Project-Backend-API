@@ -14,7 +14,14 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("Mongo"));
 builder.Services.AddSingleton<IMongoCollection<DEFRAMetadata>>(MetadataCollectionFactory.GetMongoCollection);
-builder.Services.AddSingleton<MetadataService>();
+builder.Services.AddSingleton<IMetadataService, MetadataService>();
+
+builder.Services.AddHttpClient<IAirQualityService, DEFRACsvService>(client =>
+{
+    client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
+});
+
+builder.Services.AddSingleton<IAirQualityService, DEFRACsvService>();
 
 var app = builder.Build();
 
@@ -32,3 +39,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }

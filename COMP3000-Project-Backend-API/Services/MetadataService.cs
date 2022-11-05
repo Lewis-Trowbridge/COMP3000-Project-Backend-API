@@ -4,7 +4,7 @@ using MongoDB.Driver;
 
 namespace COMP3000_Project_Backend_API.Services;
 
-public class MetadataService {
+public class MetadataService : IMetadataService {
     private readonly IMongoCollection<DEFRAMetadata> _metadataCollection;
 
     public MetadataService(IMongoCollection<DEFRAMetadata> metadataCollection) {
@@ -14,7 +14,8 @@ public class MetadataService {
     public async Task<List<DEFRAMetadata>> GetAsync(BoundingBox bbox)
     {
         var filterBuilder = Builders<DEFRAMetadata>.Filter;
-        var filter = filterBuilder.GeoWithinBox(x => x.Coords, bbox.BottomLeftX, bbox.BottomLeftY, bbox.TopRightX, bbox.TopRightY);
+        // Reverse the order as Mongo requires longitude, latitude
+        var filter = filterBuilder.GeoWithinBox(x => x.Coords, bbox.BottomLeftY, bbox.BottomLeftX, bbox.TopRightY, bbox.TopRightX);
         return await (await _metadataCollection.FindAsync(filter)).ToListAsync();
     }
 }

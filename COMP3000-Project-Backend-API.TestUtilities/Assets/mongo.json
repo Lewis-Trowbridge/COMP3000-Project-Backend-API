@@ -1,0 +1,19 @@
+[{
+  "_id": "ABD",
+  "site_name": "Aberdeen",
+  "start_date": "2003-08-01",
+  "end_date": "2021-09-20",
+  "coords": [
+    -2.094278,
+    57.15736
+  ]
+},{
+  "_id": "ABD9",
+  "site_name": "Aberdeen Erroll Park",
+  "start_date": "2021-10-01",
+  "end_date": "2022-10-29",
+  "coords": [
+    -2.09477,
+    57.1574
+  ]
+}]
