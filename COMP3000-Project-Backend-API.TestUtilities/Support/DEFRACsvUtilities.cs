@@ -9,24 +9,26 @@ namespace COMP3000_Project_Backend_API.TestUtilities.Support
 
         public static HttpMessageHandler GetHttpMessageHandler()
         {
-            var handler = new Mock<HttpMessageHandler>();
-
-            handler.SetupRequest("https://uk-air.defra.gov.uk/datastore/data_files/site_pol_data/ABD_PM25_2022.csv").ReturnsResponse(System.Net.HttpStatusCode.OK, DEFRAUCsvUtilities.ABDCSV);
-            handler.SetupRequest("https://uk-air.defra.gov.uk/datastore/data_files/site_pol_data/ABD9_PM25_2022.csv").ReturnsResponse(System.Net.HttpStatusCode.OK, DEFRAUCsvUtilities.ABD9CSV);
-
+            var handler = GetMockHttpMessageHandler();
             return handler.Object;
         }
 
-        public static HttpClient SetupHttpClient()
+        public static HttpClient GetHttpClient()
+        {
+            var handler = GetMockHttpMessageHandler();
+            var client = handler.CreateClient();
+            client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
+            return client;
+        }
+
+        private static Mock<HttpMessageHandler> GetMockHttpMessageHandler()
         {
             var handler = new Mock<HttpMessageHandler>();
 
             handler.SetupRequest("https://uk-air.defra.gov.uk/datastore/data_files/site_pol_data/ABD_PM25_2022.csv").ReturnsResponse(System.Net.HttpStatusCode.OK, DEFRAUCsvUtilities.ABDCSV);
             handler.SetupRequest("https://uk-air.defra.gov.uk/datastore/data_files/site_pol_data/ABD9_PM25_2022.csv").ReturnsResponse(System.Net.HttpStatusCode.OK, DEFRAUCsvUtilities.ABD9CSV);
 
-            var client = handler.CreateClient();
-            client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
-            return client;
+            return handler;
         }
 
         public static string ABDCSV { get; } = @"
