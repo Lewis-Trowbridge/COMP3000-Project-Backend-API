@@ -4,15 +4,12 @@ using COMP3000_Project_Backend_API.Models.MongoDB;
 using COMP3000_Project_Backend_API.Models.Request;
 using COMP3000_Project_Backend_API.Services;
 using COMP3000_Project_Backend_API.TestUtilities.Support;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using System.Globalization;
 using System.Net.Http.Json;
 using System.Text.Json;
-using System.Web;
 
 namespace COMP3000_Project_Backend_API.FunctionalTests.Controllers
 {
