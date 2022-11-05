@@ -21,8 +21,6 @@ builder.Services.AddHttpClient<IAirQualityService, DEFRACsvService>(client =>
     client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
 });
 
-builder.Services.AddSingleton<IAirQualityService, DEFRACsvService>();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
