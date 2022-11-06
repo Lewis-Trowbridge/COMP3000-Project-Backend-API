@@ -1,7 +1,7 @@
 ﻿using COMP3000_Project_Backend_API.Models;
 using COMP3000_Project_Backend_API.Models.MongoDB;
 using COMP3000_Project_Backend_API.Services;
-using Moq.Contrib.HttpClient;
+using SimpleDateTimeProvider;
 using System.Globalization;
 
 namespace COMP3000_Project_Backend_API.Tests.Services
@@ -19,7 +19,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
 
             var client = handler.CreateClient();
             client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
-            var service = new DEFRACsvService(client);
+            var service = new DEFRACsvService(client, new SystemDateTimeProvider());
 
             var testMetadata = new DEFRAMetadata()
             {
@@ -44,7 +44,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
 
             var client = handler.CreateClient();
             client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
-            var service = new DEFRACsvService(client);
+            var service = new DEFRACsvService(client, new SystemDateTimeProvider());
 
             var testMetadata = new DEFRAMetadata()
             {
@@ -78,7 +78,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
 
             var client = handler.CreateClient();
             client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
-            var service = new DEFRACsvService(client);
+            var service = new DEFRACsvService(client, new SystemDateTimeProvider());
 
             var expected = new AirQualityInfo()
             {
@@ -122,7 +122,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
 
             var client = handler.CreateClient();
             client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
-            var service = new DEFRACsvService(client);
+            var service = new DEFRACsvService(client, new SystemDateTimeProvider());
 
             var expected = new AirQualityInfo()
             {
@@ -166,7 +166,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
 
             var client = handler.CreateClient();
             client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
-            var service = new DEFRACsvService(client);
+            var service = new DEFRACsvService(client, new SystemDateTimeProvider());
 
             var expected = new AirQualityInfo()
             {
@@ -211,7 +211,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
 
             var client = handler.CreateClient();
             client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
-            var service = new DEFRACsvService(client);
+            var service = new DEFRACsvService(client, new SystemDateTimeProvider());
 
             var expected = new AirQualityInfo()
             {
@@ -256,12 +256,60 @@ namespace COMP3000_Project_Backend_API.Tests.Services
 
             var client = handler.CreateClient();
             client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
-            var service = new DEFRACsvService(client);
+            var service = new DEFRACsvService(client, new SystemDateTimeProvider());
 
             var actual = await service.GetAirQualityInfo(testMetadata, testDateTime);
 
             actual.Should().BeNull();
         }
+
+        [Fact]
+        public async void DEFRACsvService_Get_ReturnsLastResultWithNullTimestamp()
+        {
+            var testStationId = "WREX";
+            var testStationName = "Wrexham";
+            var testStationCoords = new double[] { 51.5106748, -0.1355159 };
+            var testMetadata = new DEFRAMetadata()
+            {
+                Id = testStationId,
+                SiteName = testStationName,
+                Coords = testStationCoords
+            };
+
+            var mockDateTime = DateTime.Parse("11-01-2022 00:00:00", CultureInfo.GetCultureInfo("en-GB"));
+            var mockDateTimeProvider = Mock.Of<IDateTimeProvider>(x => x.UtcNow == mockDateTime);
+            var testAddress = DEFRACsvService.DEFRABaseAddress + $"{testStationId}_PM25_{mockDateTime.Year}.csv";
+            var handler = new Mock<HttpMessageHandler>();
+            handler.SetupRequest(HttpMethod.Get, testAddress).ReturnsResponse(System.Net.HttpStatusCode.OK, ValidCSV);
+
+            var client = handler.CreateClient();
+            client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
+            var service = new DEFRACsvService(client, mockDateTimeProvider);
+
+            var expected = new AirQualityInfo()
+            {
+                Value = 1.792F,
+                Unit = DEFRACsvService.PM25Unit,
+                Timestamp = mockDateTime.AddDays(-1),
+                LicenseInfo = DEFRACsvService.LicenseString,
+                Station = new Station()
+                {
+                    Name = testStationName,
+                    Coordinates = new LatLong()
+                    {
+                        Lat = testStationCoords[1],
+                        Lng = testStationCoords[0]
+                    }
+                }
+            };
+
+            var actual = await service.GetAirQualityInfo(testMetadata, null);
+
+            actual.Should().BeEquivalentTo(expected);
+
+        }
+
+
 
         private static readonly string ValidCSV = @"
 Data supplied by UK-AIR on 1/11/2022

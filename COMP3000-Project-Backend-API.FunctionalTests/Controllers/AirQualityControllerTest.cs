@@ -67,7 +67,6 @@ namespace COMP3000_Project_Backend_API.FunctionalTests.Controllers
         }
 
         [Theory]
-        [InlineData(@"{""timestamp"": null, bbox: {""bottomLeftX"": 1, ""bottomLeftY"": 1, ""topRightX"": 1, ""topRightY"": 1}}")]
         [InlineData(@"{""timestamp"": ""2022-01-04T01:00:00.000Z"", bbox: {""bottomLeftX"": null, ""bottomLeftY"": 1, ""topRightX"": 1, ""topRightY"": 1}}")]
         [InlineData(@"{""timestamp"": ""2022-01-04T01:00:00.000Z"", bbox: {""bottomLeftX"": 1, ""bottomLeftY"": null, ""topRightX"": 1, ""topRightY"": 1}}")]
         [InlineData(@"{""timestamp"": ""2022-01-04T01:00:00.000Z"", bbox: {""bottomLeftX"": 1, ""bottomLeftY"": 1, ""topRightX"": null, ""topRightY"": 1}}")]

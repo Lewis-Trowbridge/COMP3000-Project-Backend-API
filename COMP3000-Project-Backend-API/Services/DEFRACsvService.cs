@@ -1,6 +1,7 @@
 using COMP3000_Project_Backend_API.Models;
 using COMP3000_Project_Backend_API.Models.MongoDB;
 using CsvHelper;
+using SimpleDateTimeProvider;
 using System.Globalization;
 
 namespace COMP3000_Project_Backend_API.Services
@@ -8,19 +9,23 @@ namespace COMP3000_Project_Backend_API.Services
     public class DEFRACsvService : IAirQualityService
     {
         private readonly HttpClient _httpClient;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
         public static string PM25Unit { get; } = "PM2.5";
         public static string LicenseString { get; } = "© Crown copyright 2021 Defra via uk-air.defra.gov.uk, licensed under the Open Government Licence.";
         public static string DEFRABaseAddress { get; } = "https://uk-air.defra.gov.uk/datastore/data_files/site_pol_data/";
 
-        public DEFRACsvService(HttpClient httpClient)
+        public DEFRACsvService(HttpClient httpClient, IDateTimeProvider dateTimeProvider)
         {
             _httpClient = httpClient;
+            _dateTimeProvider = dateTimeProvider;
         }
 
-        public async Task<AirQualityInfo?> GetAirQualityInfo(DEFRAMetadata metadata, DateTime timestamp)
+        public async Task<AirQualityInfo?> GetAirQualityInfo(DEFRAMetadata metadata, DateTime? timestamp)
         {
-            var request = await _httpClient.GetAsync($"{metadata.Id}_PM25_{timestamp.Year}.csv");
+            DateTime updatedTimestamp = timestamp ?? _dateTimeProvider.UtcNow.AddDays(-1);
+
+            var request = await _httpClient.GetAsync($"{metadata.Id}_PM25_{updatedTimestamp.Year}.csv");
 
             if (!request.IsSuccessStatusCode)
             {
@@ -30,19 +35,28 @@ namespace COMP3000_Project_Backend_API.Services
             var contentString = await request.Content.ReadAsStringAsync();
             contentString = RemoveHeaderLines(contentString);
             contentString = RemoveProvisionalTags(contentString);
-            var dateString = timestamp.ToString("dd-MM-yyyy");
-            var timeString = GetTimeString(timestamp);
 
             using var contentStringReader = new StringReader(contentString);
             using var csv = new CsvReader(contentStringReader, CultureInfo.InvariantCulture);
             var records = csv.GetRecords<dynamic>();
-            var record = records
+            if (timestamp.HasValue)
+            {
+                var dateString = updatedTimestamp.ToString("dd-MM-yyyy");
+                var timeString = GetTimeString(updatedTimestamp);
+                var record = records
                 .Select(x => x as IDictionary<string, object>)
                 .SingleOrDefault(x => x is not null && x["   Date   "].Equals(dateString), new Dictionary<string, object>())!;
+                var floatRecord = (record.TryGetValue(timeString, out var stringRecord)) ? float.Parse((string)stringRecord) : -1f;
 
-            var floatRecord = (record.TryGetValue(timeString, out var stringRecord)) ? float.Parse((string)stringRecord) : -1f;
+                return AssembleAirQualityInfo(metadata, updatedTimestamp, floatRecord);
+            }
+            else
+            {
+                var record = records.Last() as IDictionary<string, object>;
+                var floatRecord = record!.TryGetValue(" 24:00", out var stringRecord) ? float.Parse((string)stringRecord) : -1f;
 
-            return AssembleAirQualityInfo(metadata, timestamp, floatRecord);
+                return AssembleAirQualityInfo(metadata, updatedTimestamp, floatRecord);
+            }
 
         }
 

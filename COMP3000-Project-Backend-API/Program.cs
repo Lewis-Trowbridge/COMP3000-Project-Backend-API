@@ -2,6 +2,7 @@ using COMP3000_Project_Backend_API.Factories;
 using COMP3000_Project_Backend_API.Models.MongoDB;
 using COMP3000_Project_Backend_API.Services;
 using MongoDB.Driver;
+using SimpleDateTimeProvider;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,13 +14,15 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("Mongo"));
-builder.Services.AddSingleton<IMongoCollection<DEFRAMetadata>>(MetadataCollectionFactory.GetMongoCollection);
+builder.Services.AddSingleton(MetadataCollectionFactory.GetMongoCollection);
 builder.Services.AddSingleton<IMetadataService, MetadataService>();
 
 builder.Services.AddHttpClient<IAirQualityService, DEFRACsvService>(client =>
 {
     client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
 });
+
+builder.Services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
 
 var app = builder.Build();
 
