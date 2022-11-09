@@ -12,7 +12,7 @@ namespace COMP3000_Project_Backend_API.Services
         private readonly IDateTimeProvider _dateTimeProvider;
 
         public static string PM25Unit { get; } = "PM2.5";
-        public static string LicenseString { get; } = "© Crown copyright 2021 Defra via uk-air.defra.gov.uk, licensed under the Open Government Licence.";
+        public static string LicenseString { get; } = "\u00A9 Crown copyright 2021 Defra via uk-air.defra.gov.uk, licensed under the Open Government Licence.";
         public static string DEFRABaseAddress { get; } = "https://uk-air.defra.gov.uk/datastore/data_files/site_pol_data/";
 
         public DEFRACsvService(HttpClient httpClient, IDateTimeProvider dateTimeProvider)
