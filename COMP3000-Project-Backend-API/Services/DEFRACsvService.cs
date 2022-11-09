@@ -23,7 +23,7 @@ namespace COMP3000_Project_Backend_API.Services
 
         public async Task<AirQualityInfo?> GetAirQualityInfo(DEFRAMetadata metadata, DateTime? timestamp)
         {
-            DateTime updatedTimestamp = timestamp ?? _dateTimeProvider.UtcNow.AddDays(-1);
+            DateTime updatedTimestamp = timestamp ?? _dateTimeProvider.UtcNow.Date.AddDays(-1);
 
             var request = await _httpClient.GetAsync($"{metadata.Id}_PM25_{updatedTimestamp.Year}.csv");
 

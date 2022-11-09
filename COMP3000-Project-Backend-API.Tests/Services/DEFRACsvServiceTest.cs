@@ -290,8 +290,13 @@ namespace COMP3000_Project_Backend_API.Tests.Services
             actual.Should().BeNull();
         }
 
-        [Fact]
-        public async void DEFRACsvService_Get_ReturnsLastResultWithNullTimestamp()
+        [Theory]
+        [InlineData("11-01-2022 00:00:00")]
+        [InlineData("11-01-2022 04:00:00")]
+        [InlineData("11-01-2022 04:30:00")]
+        [InlineData("11-01-2022 04:15:00")]
+        [InlineData("11-01-2022 04:45:00")]
+        public async void DEFRACsvService_Get_ReturnsLastResultWithNullTimestamp(string currentTime)
         {
             var testStationId = "WREX";
             var testStationName = "Wrexham";
@@ -303,9 +308,9 @@ namespace COMP3000_Project_Backend_API.Tests.Services
                 Coords = testStationCoords
             };
 
-            var mockDateTime = DateTime.Parse("11-01-2022 00:00:00", CultureInfo.GetCultureInfo("en-GB"));
-            var mockDateTimeProvider = Mock.Of<IDateTimeProvider>(x => x.UtcNow == mockDateTime);
-            var testAddress = DEFRACsvService.DEFRABaseAddress + $"{testStationId}_PM25_{mockDateTime.Year}.csv";
+            var mockCurrentDateTime = DateTime.Parse(currentTime, CultureInfo.GetCultureInfo("en-GB"));
+            var mockDateTimeProvider = Mock.Of<IDateTimeProvider>(x => x.UtcNow == mockCurrentDateTime);
+            var testAddress = DEFRACsvService.DEFRABaseAddress + $"{testStationId}_PM25_{mockCurrentDateTime.Year}.csv";
             var handler = new Mock<HttpMessageHandler>();
             handler.SetupRequest(HttpMethod.Get, testAddress).ReturnsResponse(System.Net.HttpStatusCode.OK, ValidCSV);
 
@@ -313,11 +318,12 @@ namespace COMP3000_Project_Backend_API.Tests.Services
             client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
             var service = new DEFRACsvService(client, mockDateTimeProvider);
 
+            var expectedDatetime = DateTime.Parse("10-01-2022 00:00:00", CultureInfo.GetCultureInfo("en-GB"));
             var expected = new AirQualityInfo()
             {
                 Value = 1.792F,
                 Unit = DEFRACsvService.PM25Unit,
-                Timestamp = mockDateTime.AddDays(-1),
+                Timestamp = expectedDatetime,
                 LicenseInfo = DEFRACsvService.LicenseString,
                 Station = new Station()
                 {
