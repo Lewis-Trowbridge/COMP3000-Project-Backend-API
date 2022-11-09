@@ -46,14 +46,14 @@ namespace COMP3000_Project_Backend_API.Services
                 var record = records
                 .Select(x => x as IDictionary<string, object>)
                 .SingleOrDefault(x => x is not null && x["   Date   "].Equals(dateString), new Dictionary<string, object>())!;
-                var floatRecord = (record.TryGetValue(timeString, out var stringRecord)) ? float.Parse((string)stringRecord) : -1f;
+                var floatRecord = GetFloatValue(record, timeString);
 
                 return AssembleAirQualityInfo(metadata, updatedTimestamp, floatRecord);
             }
             else
             {
                 var record = records.Last() as IDictionary<string, object>;
-                var floatRecord = record!.TryGetValue(" 24:00", out var stringRecord) ? float.Parse((string)stringRecord) : -1f;
+                var floatRecord = GetFloatValue(record!, " 24:00");
 
                 return AssembleAirQualityInfo(metadata, updatedTimestamp, floatRecord);
             }
@@ -80,6 +80,14 @@ namespace COMP3000_Project_Backend_API.Services
                 hour = 24;
             }
             return string.Format(" {0:00}:00", hour);
+        }
+
+        private static float GetFloatValue(IDictionary<string, object> record, string timeString)
+        {
+            return record!.TryGetValue(timeString, out var objectRecord)
+                    && objectRecord is string stringRecord
+                    && !string.IsNullOrWhiteSpace(stringRecord)
+                    ? float.Parse(stringRecord) : -1f;
         }
 
         private static AirQualityInfo? AssembleAirQualityInfo(DEFRAMetadata metadata, DateTime timestamp, float value)
