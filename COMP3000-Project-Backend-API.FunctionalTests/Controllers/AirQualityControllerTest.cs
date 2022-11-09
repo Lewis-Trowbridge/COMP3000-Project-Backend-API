@@ -10,7 +10,9 @@ using Microsoft.Extensions.DependencyInjection;
 using SimpleDateTimeProvider;
 using System.Globalization;
 using System.Net.Http.Json;
+using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Unicode;
 
 namespace COMP3000_Project_Backend_API.FunctionalTests.Controllers
 {
@@ -62,7 +64,7 @@ namespace COMP3000_Project_Backend_API.FunctionalTests.Controllers
             response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
             var stringActual = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true, Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) };
             var actual = JsonSerializer.Deserialize<AirQualityInfo[]>(stringActual, options);
             var expected = JsonSerializer.Deserialize<AirQualityInfo[]>(ValidJSON, options);
 
@@ -88,7 +90,7 @@ namespace COMP3000_Project_Backend_API.FunctionalTests.Controllers
             response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
             var stringActual = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true, Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) };
             var actual = JsonSerializer.Deserialize<AirQualityInfo[]>(stringActual, options);
             var expected = JsonSerializer.Deserialize<AirQualityInfo[]>(ValidNullTimestampJSON, options);
 
