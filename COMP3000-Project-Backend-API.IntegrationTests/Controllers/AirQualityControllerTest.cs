@@ -6,6 +6,7 @@ using COMP3000_Project_Backend_API.Models.Request;
 using COMP3000_Project_Backend_API.Services;
 using COMP3000_Project_Backend_API.TestUtilities.Support;
 using MongoDB.Driver;
+using SimpleDateTimeProvider;
 using System.Globalization;
 
 namespace COMP3000_Project_Backend_API.IntegrationTests.Controllers
@@ -29,7 +30,7 @@ namespace COMP3000_Project_Backend_API.IntegrationTests.Controllers
         public async void AirQualityController_GetAirQuality_GetsValidData()
         {
             var metadataService = new MetadataService(_collection);
-            var airQualityService = new DEFRACsvService(DEFRAUCsvUtilities.GetHttpClient());
+            var airQualityService = new DEFRACsvService(DEFRAUCsvUtilities.GetHttpClient(), new SystemDateTimeProvider());
             var timestamp = DateTime.Parse("04-01-2022 01:00:00", CultureInfo.GetCultureInfo("en-GB"));
             var controller = new AirQualityController(metadataService, airQualityService);
 

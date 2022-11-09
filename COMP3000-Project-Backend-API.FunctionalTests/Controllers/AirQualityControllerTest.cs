@@ -7,9 +7,12 @@ using COMP3000_Project_Backend_API.TestUtilities.Support;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using SimpleDateTimeProvider;
 using System.Globalization;
 using System.Net.Http.Json;
+using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Unicode;
 
 namespace COMP3000_Project_Backend_API.FunctionalTests.Controllers
 {
@@ -33,6 +36,8 @@ namespace COMP3000_Project_Backend_API.FunctionalTests.Controllers
                         options.DatabaseName = "metadata";
                     });
 
+                    services.AddSingleton(DEFRAUCsvUtilities.GetMockProvider());
+                    
                     services.AddHttpClient<IAirQualityService, DEFRACsvService>()
                     .ConfigureHttpMessageHandlerBuilder(builder => builder.PrimaryHandler = DEFRAUCsvUtilities.GetHttpMessageHandler());
                 });
@@ -41,7 +46,7 @@ namespace COMP3000_Project_Backend_API.FunctionalTests.Controllers
         }
 
         [Fact]
-        public async void AirQualityController_GetAirQuality_Returns200AndValidData()
+        public async void AirQualityController_GetAirQuality_WithTimestampReturns200AndValidData()
         {
             var request = new AirQualityRequest()
             {
@@ -59,15 +64,41 @@ namespace COMP3000_Project_Backend_API.FunctionalTests.Controllers
             response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
             var stringActual = await response.Content.ReadAsStringAsync();
-            var actual = JsonSerializer.Deserialize<AirQualityInfo[]>(stringActual);
-            var expected = JsonSerializer.Deserialize<AirQualityInfo[]>(ValidJSON);
+            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true, Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) };
+            var actual = JsonSerializer.Deserialize<AirQualityInfo[]>(stringActual, options);
+            var expected = JsonSerializer.Deserialize<AirQualityInfo[]>(ValidJSON, options);
+
+            actual.Should().BeEquivalentTo(expected);
+
+        }
+
+        [Fact]
+        public async void AirQualityController_GetAirQuality_WithoutTimestampReturns200AndValidData()
+        {
+            var request = new AirQualityRequest()
+            {
+                Bbox = new BoundingBox()
+                {
+                    BottomLeftX = 49.70890434294886,
+                    BottomLeftY = -13.168850856210385,
+                    TopRightX = 59.6111417069173,
+                    TopRightY = 1.9483351626784629
+                }
+            };
+
+            var response = await _client.PostAsJsonAsync("api/airquality", request);
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+
+            var stringActual = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true, Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) };
+            var actual = JsonSerializer.Deserialize<AirQualityInfo[]>(stringActual, options);
+            var expected = JsonSerializer.Deserialize<AirQualityInfo[]>(ValidNullTimestampJSON, options);
 
             actual.Should().BeEquivalentTo(expected);
 
         }
 
         [Theory]
-        [InlineData(@"{""timestamp"": null, bbox: {""bottomLeftX"": 1, ""bottomLeftY"": 1, ""topRightX"": 1, ""topRightY"": 1}}")]
         [InlineData(@"{""timestamp"": ""2022-01-04T01:00:00.000Z"", bbox: {""bottomLeftX"": null, ""bottomLeftY"": 1, ""topRightX"": 1, ""topRightY"": 1}}")]
         [InlineData(@"{""timestamp"": ""2022-01-04T01:00:00.000Z"", bbox: {""bottomLeftX"": 1, ""bottomLeftY"": null, ""topRightX"": 1, ""topRightY"": 1}}")]
         [InlineData(@"{""timestamp"": ""2022-01-04T01:00:00.000Z"", bbox: {""bottomLeftX"": 1, ""bottomLeftY"": 1, ""topRightX"": null, ""topRightY"": 1}}")]
@@ -80,7 +111,8 @@ namespace COMP3000_Project_Backend_API.FunctionalTests.Controllers
             response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
         }
 
-        private static string ValidJSON { get; } = @"[{""value"":2.263,""unit"":""PM2.5"",""timestamp"":""2022-01-04T01:00:00+00:00"",""licenseInfo"":""© Crown copyright 2021 Defra via uk-air.defra.gov.uk, licensed under the Open Government Licence."",""station"":{""name"":""Aberdeen Erroll Park"",""coordinates"":{""lat"":57.1574,""lng"":-2.09477}}},{""value"":1.263,""unit"":""PM2.5"",""timestamp"":""2022-01-04T01:00:00+00:00"",""licenseInfo"":""© Crown copyright 2021 Defra via uk-air.defra.gov.uk, licensed under the Open Government Licence."",""station"":{""name"":""Aberdeen"",""coordinates"":{""lat"":57.15736,""lng"":-2.094278}}}]";
+        private static string ValidJSON { get; } = @"[{""value"":2.263,""unit"":""PM2.5"",""timestamp"":""2022-01-04T01:00:00+00:00"",""licenseInfo"":""\u00A9 Crown copyright 2021 Defra via uk-air.defra.gov.uk, licensed under the Open Government Licence."",""station"":{""name"":""Aberdeen Erroll Park"",""coordinates"":{""lat"":57.1574,""lng"":-2.09477}}},{""value"":1.263,""unit"":""PM2.5"",""timestamp"":""2022-01-04T01:00:00+00:00"",""licenseInfo"":""\u00A9 Crown copyright 2021 Defra via uk-air.defra.gov.uk, licensed under the Open Government Licence."",""station"":{""name"":""Aberdeen"",""coordinates"":{""lat"":57.15736,""lng"":-2.094278}}}]";
+        private static string ValidNullTimestampJSON { get; } = @"[{""value"":2.792,""unit"":""PM2.5"",""timestamp"":""2022-10-10T00:00:00"",""licenseInfo"":""\u00A9 Crown copyright 2021 Defra via uk-air.defra.gov.uk, licensed under the Open Government Licence."",""station"":{""name"":""Aberdeen Erroll Park"",""coordinates"":{""lat"":57.1574,""lng"":-2.09477}}},{""value"":1.792,""unit"":""PM2.5"",""timestamp"":""2022-10-10T00:00:00"",""licenseInfo"":""\u00A9 Crown copyright 2021 Defra via uk-air.defra.gov.uk, licensed under the Open Government Licence."",""station"":{""name"":""Aberdeen"",""coordinates"":{""lat"":57.15736,""lng"":-2.094278}}}]";
 
         public void Dispose()
         {

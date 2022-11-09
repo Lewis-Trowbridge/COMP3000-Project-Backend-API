@@ -1,7 +1,7 @@
 ﻿using COMP3000_Project_Backend_API.Models;
 using COMP3000_Project_Backend_API.Models.MongoDB;
 using COMP3000_Project_Backend_API.Services;
-using Moq.Contrib.HttpClient;
+using SimpleDateTimeProvider;
 using System.Globalization;
 
 namespace COMP3000_Project_Backend_API.Tests.Services
@@ -19,7 +19,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
 
             var client = handler.CreateClient();
             client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
-            var service = new DEFRACsvService(client);
+            var service = new DEFRACsvService(client, new SystemDateTimeProvider());
 
             var testMetadata = new DEFRAMetadata()
             {
@@ -34,7 +34,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
         }
 
         [Fact]
-        public async void DEFRACsvService_Get_ReturnsEmptyObjectOn404()
+        public async void DEFRACsvService_Get_ReturnsNullOn404()
         {
             var testStationId = "test";
             var testDateTime = DateTime.MinValue;
@@ -44,18 +44,16 @@ namespace COMP3000_Project_Backend_API.Tests.Services
 
             var client = handler.CreateClient();
             client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
-            var service = new DEFRACsvService(client);
+            var service = new DEFRACsvService(client, new SystemDateTimeProvider());
 
             var testMetadata = new DEFRAMetadata()
             {
                 Id = testStationId
             };
 
-            var expected = new AirQualityInfo();
-
             var actual = await service.GetAirQualityInfo(testMetadata, testDateTime);
 
-            actual.Should().BeEquivalentTo(expected);
+            actual.Should().BeNull();
         }
 
         [Fact]
@@ -78,7 +76,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
 
             var client = handler.CreateClient();
             client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
-            var service = new DEFRACsvService(client);
+            var service = new DEFRACsvService(client, new SystemDateTimeProvider());
 
             var expected = new AirQualityInfo()
             {
@@ -122,7 +120,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
 
             var client = handler.CreateClient();
             client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
-            var service = new DEFRACsvService(client);
+            var service = new DEFRACsvService(client, new SystemDateTimeProvider());
 
             var expected = new AirQualityInfo()
             {
@@ -166,7 +164,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
 
             var client = handler.CreateClient();
             client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
-            var service = new DEFRACsvService(client);
+            var service = new DEFRACsvService(client, new SystemDateTimeProvider());
 
             var expected = new AirQualityInfo()
             {
@@ -211,7 +209,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
 
             var client = handler.CreateClient();
             client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
-            var service = new DEFRACsvService(client);
+            var service = new DEFRACsvService(client, new SystemDateTimeProvider());
 
             var expected = new AirQualityInfo()
             {
@@ -256,12 +254,93 @@ namespace COMP3000_Project_Backend_API.Tests.Services
 
             var client = handler.CreateClient();
             client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
-            var service = new DEFRACsvService(client);
+            var service = new DEFRACsvService(client, new SystemDateTimeProvider());
 
             var actual = await service.GetAirQualityInfo(testMetadata, testDateTime);
 
             actual.Should().BeNull();
         }
+
+        [Fact]
+        public async void DEFRACsvService_Get_ReturnsNullIfEmptyStringFoundInCSV()
+        {
+            var testStationId = "WREX";
+            var testStationName = "Wrexham";
+            var testStationCoords = new double[] { 51.5106748, -0.1355159 };
+            var testMetadata = new DEFRAMetadata()
+            {
+                Id = testStationId,
+                SiteName = testStationName,
+                Coords = testStationCoords
+            };
+
+            var testDateTime = DateTime.Parse("01-01-2022 06:00:00", CultureInfo.GetCultureInfo("en-GB"));
+            var testAddress = DEFRACsvService.DEFRABaseAddress + $"{testStationId}_PM25_{testDateTime.Year}.csv";
+            var handler = new Mock<HttpMessageHandler>();
+            handler.SetupRequest(HttpMethod.Get, testAddress).ReturnsResponse(System.Net.HttpStatusCode.OK, CSVWithEmptyValues);
+
+            var client = handler.CreateClient();
+            client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
+            var service = new DEFRACsvService(client, new SystemDateTimeProvider());
+
+            var actual = await service.GetAirQualityInfo(testMetadata, testDateTime);
+
+            actual.Should().BeNull();
+        }
+
+        [Theory]
+        [InlineData("11-01-2022 00:00:00")]
+        [InlineData("11-01-2022 04:00:00")]
+        [InlineData("11-01-2022 04:30:00")]
+        [InlineData("11-01-2022 04:15:00")]
+        [InlineData("11-01-2022 04:45:00")]
+        public async void DEFRACsvService_Get_ReturnsLastResultWithNullTimestamp(string currentTime)
+        {
+            var testStationId = "WREX";
+            var testStationName = "Wrexham";
+            var testStationCoords = new double[] { 51.5106748, -0.1355159 };
+            var testMetadata = new DEFRAMetadata()
+            {
+                Id = testStationId,
+                SiteName = testStationName,
+                Coords = testStationCoords
+            };
+
+            var mockCurrentDateTime = DateTime.Parse(currentTime, CultureInfo.GetCultureInfo("en-GB"));
+            var mockDateTimeProvider = Mock.Of<IDateTimeProvider>(x => x.UtcNow == mockCurrentDateTime);
+            var testAddress = DEFRACsvService.DEFRABaseAddress + $"{testStationId}_PM25_{mockCurrentDateTime.Year}.csv";
+            var handler = new Mock<HttpMessageHandler>();
+            handler.SetupRequest(HttpMethod.Get, testAddress).ReturnsResponse(System.Net.HttpStatusCode.OK, ValidCSV);
+
+            var client = handler.CreateClient();
+            client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
+            var service = new DEFRACsvService(client, mockDateTimeProvider);
+
+            var expectedDatetime = DateTime.Parse("10-01-2022 00:00:00", CultureInfo.GetCultureInfo("en-GB"));
+            var expected = new AirQualityInfo()
+            {
+                Value = 1.792F,
+                Unit = DEFRACsvService.PM25Unit,
+                Timestamp = expectedDatetime,
+                LicenseInfo = DEFRACsvService.LicenseString,
+                Station = new Station()
+                {
+                    Name = testStationName,
+                    Coordinates = new LatLong()
+                    {
+                        Lat = testStationCoords[1],
+                        Lng = testStationCoords[0]
+                    }
+                }
+            };
+
+            var actual = await service.GetAirQualityInfo(testMetadata, null);
+
+            actual.Should().BeEquivalentTo(expected);
+
+        }
+
+
 
         private static readonly string ValidCSV = @"
 Data supplied by UK-AIR on 1/11/2022
@@ -279,5 +358,14 @@ Wrexham PM<sub>2.5</sub> particulate matter (Hourly measured) ug/m-3
 08-01-2022, 5.236, 4.741, 3.939, 3.420, 2.429, 3.774, 3.137, 1.321, 1.250, 0.708, 1.792, 8.585,10.425, 9.175,10.613,11.910,12.830, 7.712, 5.920, 6.179, 5.000, 4.693, 5.472, 5.755
 09-01-2022, 5.495, 4.976, 4.788, 3.892, 2.807, 3.278, 3.797, 4.222, 5.024, 5.637, 5.472, 5.519, 4.835, 6.321, 6.132, 9.009,10.826,12.901,16.132,14.127, 8.915, 7.807, 7.642, 7.642
 10-01-2022, 8.679, 7.948, 8.113, 8.255, 8.750, 8.821, 8.184, 6.675, 5.118, 4.764, 4.552, 4.410, 3.750, 3.373, 3.561, 5.896,10.000,15.566, 8.326, 8.726, 7.948, 9.104, 5.401, 1.792";
+
+        private static readonly string CSVWithEmptyValues = @"
+Data supplied by UK-AIR on 1/11/2022
+All Data GMT hour ending  
+Rows begining ## are Provisional
+Wrexham PM<sub>2.5</sub> particulate matter (Hourly measured) ug/m-3
+   Date   , 01:00, 02:00, 03:00, 04:00, 05:00, 06:00, 07:00, 08:00, 09:00, 10:00, 11:00, 12:00, 13:00, 14:00, 15:00, 16:00, 17:00, 18:00, 19:00, 20:00, 21:00, 22:00, 23:00, 24:00
+01-01-2022,19.198, 5.212, 6.109, 5.873, 6.863,      ,      , 8.443, 9.009,11.533,11.863,11.651,12.453,12.783,12.736,10.920,10.873,12.948,11.981, 9.623, 9.811, 9.127,10.354, 9.009
+";
     }
 }
