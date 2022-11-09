@@ -34,7 +34,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
         }
 
         [Fact]
-        public async void DEFRACsvService_Get_ReturnsEmptyObjectOn404()
+        public async void DEFRACsvService_Get_ReturnsNullOn404()
         {
             var testStationId = "test";
             var testDateTime = DateTime.MinValue;
@@ -51,11 +51,9 @@ namespace COMP3000_Project_Backend_API.Tests.Services
                 Id = testStationId
             };
 
-            var expected = new AirQualityInfo();
-
             var actual = await service.GetAirQualityInfo(testMetadata, testDateTime);
 
-            actual.Should().BeEquivalentTo(expected);
+            actual.Should().BeNull();
         }
 
         [Fact]

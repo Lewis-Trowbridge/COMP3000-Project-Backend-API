@@ -29,7 +29,7 @@ namespace COMP3000_Project_Backend_API.Services
 
             if (!request.IsSuccessStatusCode)
             {
-                return new AirQualityInfo();
+                return null;
             }
             
             var contentString = await request.Content.ReadAsStringAsync();
