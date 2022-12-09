@@ -53,9 +53,12 @@ namespace COMP3000_Project_Backend_API.Services
             else
             {
                 var record = records.Last() as IDictionary<string, object>;
-                var floatRecord = GetFloatValue(record!, " 24:00");
+                var date = record?["   Date   "] as String;
+                var time = record?.Last(x => !string.IsNullOrWhiteSpace(x.Value as String)).Key;
+                // Need to get the most recent value dynamically
+                var floatRecord = GetFloatValue(record!, time);
 
-                return AssembleAirQualityInfo(metadata, updatedTimestamp, floatRecord);
+                return AssembleAirQualityInfo(metadata, date, time, floatRecord);
             }
 
         }
@@ -88,6 +91,12 @@ namespace COMP3000_Project_Backend_API.Services
                     && objectRecord is string stringRecord
                     && !string.IsNullOrWhiteSpace(stringRecord)
                     ? float.Parse(stringRecord) : -1f;
+        }
+
+        private static AirQualityInfo? AssembleAirQualityInfo(DEFRAMetadata metadata, string dateString, string hourAndMinuteString, float value)
+        {
+            var timestamp = DateTime.Parse($"{dateString} {hourAndMinuteString.Trim()}:00", CultureInfo.GetCultureInfo("en-GB"));
+            return AssembleAirQualityInfo(metadata, timestamp, value);
         }
 
         private static AirQualityInfo? AssembleAirQualityInfo(DEFRAMetadata metadata, DateTime timestamp, float value)
