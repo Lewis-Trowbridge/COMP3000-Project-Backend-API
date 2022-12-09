@@ -316,7 +316,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
             client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
             var service = new DEFRACsvService(client, mockDateTimeProvider);
 
-            var expectedDatetime = DateTime.Parse("10-01-2022 00:00:00", CultureInfo.GetCultureInfo("en-GB"));
+            var expectedDatetime = DateTime.Parse("11-01-2022 00:00:00", CultureInfo.GetCultureInfo("en-GB"));
             var expected = new AirQualityInfo()
             {
                 Value = 1.792F,
