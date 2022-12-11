@@ -15,7 +15,7 @@ namespace COMP3000_Project_Backend_API.TestUtilities.Support
             return handler.Object;
         }
 
-        public static HttpClient GetHttpClient()
+        public static HttpClient GetMockHttpClient()
         {
             var handler = GetMockHttpMessageHandler();
             var client = handler.CreateClient();
@@ -23,7 +23,7 @@ namespace COMP3000_Project_Backend_API.TestUtilities.Support
             return client;
         }
 
-        public static IDateTimeProvider GetMockProvider()
+        public static IDateTimeProvider GetMockDateTimeProvider()
         {
             var mockDateTime = DateTime.Parse("11-10-2022 03:30:00", CultureInfo.GetCultureInfo("en-GB"));
             return Mock.Of<IDateTimeProvider>(x => x.UtcNow == mockDateTime);

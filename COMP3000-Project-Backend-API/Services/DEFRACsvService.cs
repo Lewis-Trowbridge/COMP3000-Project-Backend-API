@@ -23,7 +23,7 @@ namespace COMP3000_Project_Backend_API.Services
 
         public async Task<AirQualityInfo?> GetAirQualityInfo(DEFRAMetadata metadata, DateTime? timestamp)
         {
-            DateTime updatedTimestamp = timestamp ?? _dateTimeProvider.UtcNow.Date.AddDays(-1);
+            DateTime updatedTimestamp = timestamp ?? _dateTimeProvider.UtcNow.Date;
 
             var request = await _httpClient.GetAsync($"{metadata.Id}_PM25_{updatedTimestamp.Year}.csv");
 
@@ -46,19 +46,20 @@ namespace COMP3000_Project_Backend_API.Services
                 var record = records
                 .Select(x => x as IDictionary<string, object>)
                 .SingleOrDefault(x => x is not null && x["   Date   "].Equals(dateString), new Dictionary<string, object>())!;
-                var floatRecord = GetFloatValue(record, timeString);
+                var reading = GetFloatValue(record, timeString);
 
-                return AssembleAirQualityInfo(metadata, updatedTimestamp, floatRecord);
+                return AssembleAirQualityInfo(metadata, updatedTimestamp, reading);
             }
             else
             {
                 var record = records.Last() as IDictionary<string, object>;
-                var date = record?["   Date   "] as string;
-                var time = record?.Last(x => !string.IsNullOrWhiteSpace(x.Value as string)).Key;
-                // Need to get the most recent value dynamically
-                var floatRecord = GetFloatValue(record!, time);
+                // Get the date for the most recent record
+                var dateString = record?["   Date   "] as string;
+                // Get the hour and minute of the most recent reading in the record
+                var hourAndMinuteString = record?.Last(x => !string.IsNullOrWhiteSpace(x.Value as string)).Key!;
+                var reading = GetFloatValue(record!, hourAndMinuteString);
 
-                return AssembleAirQualityInfo(metadata, date, time, floatRecord);
+                return AssembleAirQualityInfo(metadata, dateString!, hourAndMinuteString, reading);
             }
 
         }
