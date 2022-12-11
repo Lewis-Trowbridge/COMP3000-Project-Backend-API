@@ -30,7 +30,7 @@ namespace COMP3000_Project_Backend_API.IntegrationTests.Controllers
         public async void AirQualityController_GetAirQuality_GetsValidData()
         {
             var metadataService = new MetadataService(_collection);
-            var airQualityService = new DEFRACsvService(DEFRAUCsvUtilities.GetHttpClient(), new SystemDateTimeProvider());
+            var airQualityService = new DEFRACsvService(DEFRAUCsvUtilities.GetMockHttpClient(), new SystemDateTimeProvider());
             var timestamp = DateTime.Parse("04-01-2022 01:00:00", CultureInfo.GetCultureInfo("en-GB"));
             var controller = new AirQualityController(metadataService, airQualityService);
 
