@@ -387,6 +387,36 @@ namespace COMP3000_Project_Backend_API.Tests.Services
 
         }
 
+        [Fact]
+        public async void DEFRACsvService_Get_ReturnsNullWithNullTimestampAndEmptyData()
+        {
+            var testStationId = "WREX";
+            var testStationName = "Wrexham";
+            var testStationCoords = new double[] { 51.5106748, -0.1355159 };
+            var testMetadata = new DEFRAMetadata()
+            {
+                Id = testStationId,
+                SiteName = testStationName,
+                Coords = testStationCoords
+            };
+
+            var mockCurrentDateTime = DateTime.Parse("02-01-2022 00:00:00", CultureInfo.GetCultureInfo("en-GB"));
+            var mockDateTimeProvider = Mock.Of<IDateTimeProvider>(x => x.UtcNow == mockCurrentDateTime);
+            var testAddress = DEFRACsvService.DEFRABaseAddress + $"{testStationId}_PM25_{mockCurrentDateTime.Year}.csv";
+            var handler = new Mock<HttpMessageHandler>();
+            handler.SetupRequest(HttpMethod.Get, testAddress).ReturnsResponse(System.Net.HttpStatusCode.OK, CSVWithInclompleteAll);
+
+            var client = handler.CreateClient();
+            client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
+            var service = new DEFRACsvService(client, mockDateTimeProvider);
+
+            var expectedDatetime = DateTime.Parse("01-01-2022 23:00:00", CultureInfo.GetCultureInfo("en-GB"));
+            var actual = await service.GetAirQualityInfo(testMetadata, null);
+
+            actual.Should().BeNull();
+
+        }
+
 
 
         private static readonly string ValidCSV = @"
@@ -423,5 +453,13 @@ Wrexham PM<sub>2.5</sub> particulate matter (Hourly measured) ug/m-3
    Date   , 01:00, 02:00, 03:00, 04:00, 05:00, 06:00, 07:00, 08:00, 09:00, 10:00, 11:00, 12:00, 13:00, 14:00, 15:00, 16:00, 17:00, 18:00, 19:00, 20:00, 21:00, 22:00, 23:00, 24:00
 01-01-2022,19.198, 5.212, 6.109, 5.873, 6.863, 8.844, 8.137, 8.443, 9.009,11.533,11.863,11.651,12.453,12.783,12.736,10.920,10.873,12.948,11.981, 9.623, 9.811, 9.127,10.354,      ";
 
+
+        private static readonly string CSVWithInclompleteAll = @"
+Data supplied by UK-AIR on 1/11/2022
+All Data GMT hour ending  
+Rows begining ## are Provisional
+Wrexham PM<sub>2.5</sub> particulate matter (Hourly measured) ug/m-3
+   Date   , 01:00, 02:00, 03:00, 04:00, 05:00, 06:00, 07:00, 08:00, 09:00, 10:00, 11:00, 12:00, 13:00, 14:00, 15:00, 16:00, 17:00, 18:00, 19:00, 20:00, 21:00, 22:00, 23:00, 24:00
+01-01-2022,      ,      ,      ,      ,      ,      ,      ,      ,      ,      ,      ,      ,      ,      ,      ,      ,      ,      ,      ,      ,      ,      ,      ,      ";
     }
 }

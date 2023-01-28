@@ -56,7 +56,10 @@ namespace COMP3000_Project_Backend_API.Services
                 // Get the date for the most recent record
                 var dateString = record?["   Date   "] as string;
                 // Get the hour and minute of the most recent reading in the record
-                var hourAndMinuteString = record?.Last(x => !string.IsNullOrWhiteSpace(x.Value as string)).Key!;
+                var hourAndMinuteString = record?.LastOrDefault(x =>
+                // Handle the case when a CSV has absolutely no data
+                x.Key != "   Date   " &&
+                !string.IsNullOrWhiteSpace(x.Value as string)).Key ?? " 00:00";
                 var reading = GetFloatValue(record!, hourAndMinuteString);
 
                 return AssembleAirQualityInfo(metadata, dateString!, hourAndMinuteString, reading);
