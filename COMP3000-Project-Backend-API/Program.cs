@@ -29,7 +29,7 @@ builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("Mo
 builder.Services.AddSingleton(MetadataCollectionFactory.GetMongoCollection);
 builder.Services.AddSingleton<IMetadataService, MetadataService>();
 
-builder.Services.AddHttpClient<IAirQualityService, DEFRACsvService>(client =>
+builder.Services.AddHttpClient<DEFRACsvService>(client =>
 {
     client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
 });
