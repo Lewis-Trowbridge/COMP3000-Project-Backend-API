@@ -1,7 +1,8 @@
 using COMP3000_Project_Backend_API.Services;
-using COMP3000_Project_Backend_API.Models.MongoDB;
+using COMP3000_Project_Backend_API.Factories;
 using COMP3000_Project_Backend_API.Models;
 using Microsoft.AspNetCore.Mvc;
+using SimpleDateTimeProvider;
 using COMP3000_Project_Backend_API.Models.Request;
 
 namespace COMP3000_Project_Backend_API.Controllers;
@@ -10,23 +11,24 @@ namespace COMP3000_Project_Backend_API.Controllers;
 [Route("api/[controller]")]
 public class AirQualityController: ControllerBase {
     private readonly IMetadataService _metadataService;
-    private readonly IAirQualityService _airQualityService;
+    private readonly AirQualityServiceFactory _airQualityServiceFactory;
 
-    public AirQualityController(IMetadataService metadataService, IAirQualityService airQualityService)
+    public AirQualityController(IMetadataService metadataService, AirQualityServiceFactory airQualityServiceFactory)
     {
         _metadataService = metadataService;
-        _airQualityService = airQualityService;
+        _airQualityServiceFactory = airQualityServiceFactory;
     }
 
     [HttpPost]
     public async Task<AirQualityInfo[]> GetAirQuality(AirQualityRequest request)
     {
+        var service = _airQualityServiceFactory.GetAirQualityService(request.Timestamp);
         var stations = await _metadataService.GetAsync(request.Bbox!);
         var tasks = new List<Task<AirQualityInfo?>>();
 
         foreach (var station in stations)
         {
-            tasks.Add(_airQualityService.GetAirQualityInfo(station, request.Timestamp));
+            tasks.Add(service.GetAirQualityInfo(station, request.Timestamp));
         }
 
         return (await Task.WhenAll(tasks))
