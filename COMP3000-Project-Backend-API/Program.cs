@@ -35,7 +35,7 @@ builder.Services.AddHttpClient<DEFRACsvService>(client =>
 });
 
 builder.Services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
-builder.Services.AddSingleton<AirQualityServiceFactory>();
+builder.Services.AddSingleton<IAirQualityServiceFactory, AirQualityServiceFactory>();
 
 var app = builder.Build();
 

@@ -11,9 +11,9 @@ namespace COMP3000_Project_Backend_API.Controllers;
 [Route("api/[controller]")]
 public class AirQualityController: ControllerBase {
     private readonly IMetadataService _metadataService;
-    private readonly AirQualityServiceFactory _airQualityServiceFactory;
+    private readonly IAirQualityServiceFactory _airQualityServiceFactory;
 
-    public AirQualityController(IMetadataService metadataService, AirQualityServiceFactory airQualityServiceFactory)
+    public AirQualityController(IMetadataService metadataService, IAirQualityServiceFactory airQualityServiceFactory)
     {
         _metadataService = metadataService;
         _airQualityServiceFactory = airQualityServiceFactory;

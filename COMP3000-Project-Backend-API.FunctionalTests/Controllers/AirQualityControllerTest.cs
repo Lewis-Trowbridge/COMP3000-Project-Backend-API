@@ -38,7 +38,7 @@ namespace COMP3000_Project_Backend_API.FunctionalTests.Controllers
 
                     services.AddSingleton(DEFRAUCsvUtilities.GetMockDateTimeProvider());
                     
-                    services.AddHttpClient<IAirQualityService, DEFRACsvService>()
+                    services.AddHttpClient<DEFRACsvService>()
                     .ConfigureHttpMessageHandlerBuilder(builder => builder.PrimaryHandler = DEFRAUCsvUtilities.GetHttpMessageHandler());
                 });
             })

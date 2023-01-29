@@ -3,7 +3,7 @@ using COMP3000_Project_Backend_API.Services;
 
 namespace COMP3000_Project_Backend_API.Factories
 {
-    public class AirQualityServiceFactory
+    public class AirQualityServiceFactory : IAirQualityServiceFactory
     {
         IServiceProvider _serviceProvider;
         IDateTimeProvider _dateTimeProvider;
