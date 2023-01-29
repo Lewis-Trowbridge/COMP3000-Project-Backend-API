@@ -33,6 +33,10 @@ builder.Services.AddHttpClient<DEFRACsvService>(client =>
 {
     client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
 });
+builder.Services.AddHttpClient<PredictionsAirQualityService>(client =>
+{
+    client.BaseAddress = new Uri(PredictionsAirQualityService.BaseAddress);
+});
 
 builder.Services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
 builder.Services.AddSingleton<IAirQualityServiceFactory, AirQualityServiceFactory>();

@@ -18,8 +18,7 @@ namespace COMP3000_Project_Backend_API.Factories
             var isFuture = requestTime > _dateTimeProvider.UtcNow;
             if (isFuture)
             {
-                // TODO: Change to return predictions service
-                return _serviceProvider.GetRequiredService<DEFRACsvService>();
+                return _serviceProvider.GetRequiredService<PredictionsAirQualityService>();
             }
             else
             {
