@@ -1,9 +1,10 @@
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace COMP3000_Project_Backend_API.Models.MongoDB;
 
-public class DEFRAMetadata {
+public class DEFRAMetadata
+{
     [BsonId]
     public string? Id { get; set; }
     [BsonElement("site_name")]

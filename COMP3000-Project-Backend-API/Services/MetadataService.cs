@@ -1,13 +1,15 @@
-using COMP3000_Project_Backend_API.Models;
+﻿using COMP3000_Project_Backend_API.Models;
 using COMP3000_Project_Backend_API.Models.MongoDB;
 using MongoDB.Driver;
 
 namespace COMP3000_Project_Backend_API.Services;
 
-public class MetadataService : IMetadataService {
+public class MetadataService : IMetadataService
+{
     private readonly IMongoCollection<DEFRAMetadata> _metadataCollection;
 
-    public MetadataService(IMongoCollection<DEFRAMetadata> metadataCollection) {
+    public MetadataService(IMongoCollection<DEFRAMetadata> metadataCollection)
+    {
         _metadataCollection = metadataCollection;
     }
 
