@@ -119,15 +119,7 @@ namespace COMP3000_Project_Backend_API.Services
                 Timestamp = timestamp,
                 Unit = PM25Unit,
                 LicenseInfo = LicenseString,
-                Station = new Station()
-                {
-                    Name = metadata.SiteName,
-                    Coordinates = new LatLong()
-                    {
-                        Lat = metadata.Coords[1],
-                        Lng = metadata.Coords[0]
-                    }
-                }
+                Station = metadata.ToStation(),
             };
         }
     }
