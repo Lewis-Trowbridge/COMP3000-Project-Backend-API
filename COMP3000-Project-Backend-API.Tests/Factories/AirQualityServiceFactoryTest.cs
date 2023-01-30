@@ -55,7 +55,7 @@ namespace COMP3000_Project_Backend_API.Tests.Factories
                 UtcNow = currentTime
             };
             var serviceCollection = new ServiceCollection();
-            var service = new PredictionsAirQualityService();
+            var service = new PredictionsAirQualityService(Mock.Of<HttpClient>());
             serviceCollection.AddSingleton(service);
 
             var factory = new AirQualityServiceFactory(serviceCollection.BuildServiceProvider(), mockDateTimeProvider);
