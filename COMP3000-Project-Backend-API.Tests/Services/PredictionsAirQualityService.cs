@@ -47,5 +47,58 @@ namespace COMP3000_Project_Backend_API.Tests.Services
                 return JsonSerializer.Serialize(content) == JsonSerializer.Serialize(expectedRequest);
             }, Times.Once());
         }
+
+        [Fact]
+        public async void PredictionsAirQualityService_Get_ReturnsNullWithNullTimestamp()
+        {
+            var testStationId = "test";
+            var testMetadata = new DEFRAMetadata()
+            {
+                Id = testStationId,
+                SiteName = testStationId,
+                Coords = new double[] { 0, 0 }
+            };
+            var service = new PredictionsAirQualityService(Mock.Of<HttpClient>());
+
+            var actual = await service.GetAirQualityInfo(testMetadata, null);
+
+            actual.Should().BeNull();
+        }
+
+        [Fact]
+        public async void PredictionsAirQualityService_Get_ReturnsDataInAirQualityInfo()
+        {
+            var testStationId = "test";
+            var testDateTime = DateTimeOffset.Parse("01-01-2022 04:00:00");
+            var testAddress = PredictionsAirQualityService.BaseAddress + "/v1/models/airquality:predict";
+            var testMetadata = new DEFRAMetadata()
+            {
+                Id = testStationId,
+                SiteName = testStationId,
+                Coords = new double[] { 0, 0 }
+            };
+            var handler = new Mock<HttpMessageHandler>();
+            handler.SetupRequest(HttpMethod.Post, testAddress)
+                .ReturnsResponse(System.Net.HttpStatusCode.OK, JsonSerializer.Serialize(ValidResponse));
+
+            var client = handler.CreateClient();
+            client.BaseAddress = new Uri(PredictionsAirQualityService.BaseAddress);
+
+            var expected = new AirQualityInfo()
+            {
+                Timestamp = testDateTime.UtcDateTime,
+                Value = Convert.ToSingle(ValidOutput),
+                Unit = PredictionsAirQualityService.Unit,
+                LicenseInfo = PredictionsAirQualityService.LicenseInfo,
+                Station = testMetadata.ToStation(),
+            };
+
+            var service = new PredictionsAirQualityService(client);
+
+            var actual = await service.GetAirQualityInfo(testMetadata, testDateTime.UtcDateTime);
+
+            actual.Should().BeEquivalentTo(expected);
+            
+        }
     }
 }

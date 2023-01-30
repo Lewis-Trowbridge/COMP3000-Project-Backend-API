@@ -8,6 +8,8 @@ namespace COMP3000_Project_Backend_API.Services
     public class PredictionsAirQualityService : IAirQualityService
     {
         public static string BaseAddress { get; } = "https://predictions-xsji6nno4q-ew.a.run.app";
+        public static string Unit = "PM2.5";
+        public static string LicenseInfo = "\u00A9 Lewis Trowbridge 2023";
 
         private readonly HttpClient _httpClient;
 
@@ -42,7 +44,9 @@ namespace COMP3000_Project_Backend_API.Services
                                     {
                                         Timestamp = utcTimestamp,
                                         Value = Convert.ToSingle(data.Outputs[0][0]),
-                                        Station = metadata.ToStation()
+                                        Unit = Unit,
+                                        Station = metadata.ToStation(),
+                                        LicenseInfo = LicenseInfo,
                                     };
                 }
                 return null;
