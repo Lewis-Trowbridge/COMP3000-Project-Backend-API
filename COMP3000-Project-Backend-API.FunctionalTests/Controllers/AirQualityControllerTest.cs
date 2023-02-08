@@ -1,4 +1,9 @@
-﻿using COMP3000_Project_Backend_API.IntegrationTests.Support;
+﻿using System.Globalization;
+using System.Net.Http.Json;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Unicode;
+using COMP3000_Project_Backend_API.IntegrationTests.Support;
 using COMP3000_Project_Backend_API.Models;
 using COMP3000_Project_Backend_API.Models.MongoDB;
 using COMP3000_Project_Backend_API.Models.Request;
@@ -8,11 +13,6 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleDateTimeProvider;
-using System.Globalization;
-using System.Net.Http.Json;
-using System.Text.Encodings.Web;
-using System.Text.Json;
-using System.Text.Unicode;
 
 namespace COMP3000_Project_Backend_API.FunctionalTests.Controllers
 {
@@ -37,7 +37,6 @@ namespace COMP3000_Project_Backend_API.FunctionalTests.Controllers
                     });
 
                     services.AddSingleton(DEFRAUCsvUtilities.GetMockDateTimeProvider());
-                    
                     services.AddHttpClient<DEFRACsvService>()
                     .ConfigureHttpMessageHandlerBuilder(builder => builder.PrimaryHandler = DEFRAUCsvUtilities.GetHttpMessageHandler());
                 });

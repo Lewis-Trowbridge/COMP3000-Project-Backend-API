@@ -9,9 +9,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "COMP3000-Project-Backend-AP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "COMP3000-Project-Backend-API.IntegrationTests", "COMP3000-Project-Backend-API.IntegrationTests\COMP3000-Project-Backend-API.IntegrationTests.csproj", "{6C6F203E-AF1E-48B4-8D26-828226E1E3CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "COMP3000-Project-Backend-API.FunctionalTests", "COMP3000-Project-Backend-API.FunctionalTests\COMP3000-Project-Backend-API.FunctionalTests.csproj", "{3830D470-4348-41A5-B66B-76AB5241DE6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "COMP3000-Project-Backend-API.FunctionalTests", "COMP3000-Project-Backend-API.FunctionalTests\COMP3000-Project-Backend-API.FunctionalTests.csproj", "{3830D470-4348-41A5-B66B-76AB5241DE6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "COMP3000-Project-Backend-API.TestUtilities", "COMP3000-Project-Backend-API.TestUtilities\COMP3000-Project-Backend-API.TestUtilities.csproj", "{FFBEAAAF-00D6-4CB7-A717-B1658B48E72B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "COMP3000-Project-Backend-API.TestUtilities", "COMP3000-Project-Backend-API.TestUtilities\COMP3000-Project-Backend-API.TestUtilities.csproj", "{FFBEAAAF-00D6-4CB7-A717-B1658B48E72B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4F6E7565-C088-49E8-9BC6-F9B5FD87F7EA}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

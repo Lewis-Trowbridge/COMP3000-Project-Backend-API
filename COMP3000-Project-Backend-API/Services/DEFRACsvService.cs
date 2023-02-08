@@ -1,8 +1,8 @@
+﻿using System.Globalization;
 using COMP3000_Project_Backend_API.Models;
 using COMP3000_Project_Backend_API.Models.MongoDB;
 using CsvHelper;
 using SimpleDateTimeProvider;
-using System.Globalization;
 
 namespace COMP3000_Project_Backend_API.Services
 {
@@ -31,7 +31,7 @@ namespace COMP3000_Project_Backend_API.Services
             {
                 return null;
             }
-            
+
             var contentString = await request.Content.ReadAsStringAsync();
             contentString = RemoveHeaderLines(contentString);
             contentString = RemoveProvisionalTags(contentString);

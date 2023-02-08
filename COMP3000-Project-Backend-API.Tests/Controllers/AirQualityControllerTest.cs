@@ -84,7 +84,7 @@ namespace COMP3000_Project_Backend_API.Tests.Controllers
             var airQuality2 = new AirQualityInfo() { Station = new Station() { Name = "2" } };
             var airQuality3 = new AirQualityInfo() { Station = new Station() { Name = "3" } };
             var expected = new AirQualityInfo[] { airQuality1, airQuality2, airQuality3 };
-            
+
             mockAirQualityService.Setup(x => x.GetAirQualityInfo(metadata1, It.IsAny<DateTime>())).ReturnsAsync(airQuality1);
             mockAirQualityService.Setup(x => x.GetAirQualityInfo(metadata2, It.IsAny<DateTime>())).ReturnsAsync(airQuality2);
             mockAirQualityService.Setup(x => x.GetAirQualityInfo(metadata3, It.IsAny<DateTime>())).ReturnsAsync(airQuality3);

@@ -1,6 +1,6 @@
-﻿using EphemeralMongo;
+﻿using System.Diagnostics;
+using EphemeralMongo;
 using MongoDB.Driver;
-using System.Diagnostics;
 
 namespace COMP3000_Project_Backend_API.IntegrationTests.Support
 {

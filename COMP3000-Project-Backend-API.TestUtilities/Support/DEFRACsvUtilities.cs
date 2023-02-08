@@ -1,8 +1,8 @@
-﻿using Moq;
-using Moq.Contrib.HttpClient;
+﻿using System.Globalization;
 using COMP3000_Project_Backend_API.Services;
+using Moq;
+using Moq.Contrib.HttpClient;
 using SimpleDateTimeProvider;
-using System.Globalization;
 
 namespace COMP3000_Project_Backend_API.TestUtilities.Support
 {
