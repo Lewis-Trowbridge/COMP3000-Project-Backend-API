@@ -1,4 +1,5 @@
 ﻿using COMP3000_Project_Backend_API.Controllers;
+using COMP3000_Project_Backend_API.Factories;
 using COMP3000_Project_Backend_API.Models;
 using COMP3000_Project_Backend_API.Models.MongoDB;
 using COMP3000_Project_Backend_API.Models.Request;
@@ -13,6 +14,7 @@ namespace COMP3000_Project_Backend_API.Tests.Controllers
         {
             var mockMetadataService = new Mock<IMetadataService>();
             var mockAirQualityService = new Mock<IAirQualityService>();
+            var mockAirQualityFactory = new Mock<IAirQualityServiceFactory>();
             var testBbox = new BoundingBox(0, 0, 0, 0);
 
             var metadata1 = new DEFRAMetadata();
@@ -38,7 +40,9 @@ namespace COMP3000_Project_Backend_API.Tests.Controllers
 
             mockAirQualityService.Setup(x => x.GetAirQualityInfo(It.IsAny<DEFRAMetadata>(), It.IsAny<DateTime>())).ReturnsAsync(new AirQualityInfo());
 
-            var controller = new AirQualityController(mockMetadataService.Object, mockAirQualityService.Object);
+            mockAirQualityFactory.Setup(x => x.GetAirQualityService(testDatetime)).Returns(mockAirQualityService.Object);
+
+            var controller = new AirQualityController(mockMetadataService.Object, mockAirQualityFactory.Object);
 
             await controller.GetAirQuality(testAirQualityRequest);
 
@@ -52,6 +56,7 @@ namespace COMP3000_Project_Backend_API.Tests.Controllers
         {
             var mockMetadataService = new Mock<IMetadataService>();
             var mockAirQualityService = new Mock<IAirQualityService>();
+            var mockAirQualityFactory = new Mock<IAirQualityServiceFactory>();
             var testBbox = new BoundingBox(0, 0, 0, 0);
 
             var metadata1 = new DEFRAMetadata() { SiteName = "1" };
@@ -84,8 +89,9 @@ namespace COMP3000_Project_Backend_API.Tests.Controllers
             mockAirQualityService.Setup(x => x.GetAirQualityInfo(metadata2, It.IsAny<DateTime>())).ReturnsAsync(airQuality2);
             mockAirQualityService.Setup(x => x.GetAirQualityInfo(metadata3, It.IsAny<DateTime>())).ReturnsAsync(airQuality3);
 
+            mockAirQualityFactory.Setup(x => x.GetAirQualityService(testDatetime)).Returns(mockAirQualityService.Object);
 
-            var controller = new AirQualityController(mockMetadataService.Object, mockAirQualityService.Object);
+            var controller = new AirQualityController(mockMetadataService.Object, mockAirQualityFactory.Object);
 
             var actual = await controller.GetAirQuality(testAirQualityRequest);
 
@@ -97,6 +103,7 @@ namespace COMP3000_Project_Backend_API.Tests.Controllers
         {
             var mockMetadataService = new Mock<IMetadataService>();
             var mockAirQualityService = new Mock<IAirQualityService>();
+            var mockAirQualityFactory = new Mock<IAirQualityServiceFactory>();
             var testBbox = new BoundingBox(0, 0, 0, 0);
 
             var metadata1 = new DEFRAMetadata() { SiteName = "1" };
@@ -128,8 +135,9 @@ namespace COMP3000_Project_Backend_API.Tests.Controllers
             mockAirQualityService.Setup(x => x.GetAirQualityInfo(metadata2, It.IsAny<DateTime>())).ReturnsAsync(null as AirQualityInfo);
             mockAirQualityService.Setup(x => x.GetAirQualityInfo(metadata3, It.IsAny<DateTime>())).ReturnsAsync(airQuality3);
 
+            mockAirQualityFactory.Setup(x => x.GetAirQualityService(testDatetime)).Returns(mockAirQualityService.Object);
 
-            var controller = new AirQualityController(mockMetadataService.Object, mockAirQualityService.Object);
+            var controller = new AirQualityController(mockMetadataService.Object, mockAirQualityFactory.Object);
 
             var actual = await controller.GetAirQuality(testAirQualityRequest);
 

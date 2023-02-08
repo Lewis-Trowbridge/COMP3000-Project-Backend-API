@@ -15,4 +15,16 @@ public class DEFRAMetadata
     public DateTime EndDate { get; set; }
     [BsonElement("coords")]
     public double[] Coords { get; set; } = null!;
+    public Station ToStation()
+    {
+        return new Station()
+        {
+            Name = SiteName,
+            Coordinates = new LatLong()
+            {
+                Lat = Coords[1],
+                Lng = Coords[0]
+            }
+        };
+    }
 }

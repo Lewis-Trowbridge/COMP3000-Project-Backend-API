@@ -29,12 +29,17 @@ builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("Mo
 builder.Services.AddSingleton(MetadataCollectionFactory.GetMongoCollection);
 builder.Services.AddSingleton<IMetadataService, MetadataService>();
 
-builder.Services.AddHttpClient<IAirQualityService, DEFRACsvService>(client =>
+builder.Services.AddHttpClient<DEFRACsvService>(client =>
 {
     client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
 });
+builder.Services.AddHttpClient<PredictionsAirQualityService>(client =>
+{
+    client.BaseAddress = new Uri(PredictionsAirQualityService.BaseAddress);
+});
 
 builder.Services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
+builder.Services.AddSingleton<IAirQualityServiceFactory, AirQualityServiceFactory>();
 
 var app = builder.Build();
 

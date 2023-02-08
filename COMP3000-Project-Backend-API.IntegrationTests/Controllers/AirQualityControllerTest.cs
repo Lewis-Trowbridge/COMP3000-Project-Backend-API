@@ -1,11 +1,14 @@
 ﻿using System.Globalization;
+using System.Globalization;
 using COMP3000_Project_Backend_API.Controllers;
+using COMP3000_Project_Backend_API.Factories;
 using COMP3000_Project_Backend_API.IntegrationTests.Support;
 using COMP3000_Project_Backend_API.Models;
 using COMP3000_Project_Backend_API.Models.MongoDB;
 using COMP3000_Project_Backend_API.Models.Request;
 using COMP3000_Project_Backend_API.Services;
 using COMP3000_Project_Backend_API.TestUtilities.Support;
+using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using SimpleDateTimeProvider;
 
@@ -32,7 +35,11 @@ namespace COMP3000_Project_Backend_API.IntegrationTests.Controllers
             var metadataService = new MetadataService(_collection);
             var airQualityService = new DEFRACsvService(DEFRAUCsvUtilities.GetMockHttpClient(), new SystemDateTimeProvider());
             var timestamp = DateTime.Parse("04-01-2022 01:00:00", CultureInfo.GetCultureInfo("en-GB"));
-            var controller = new AirQualityController(metadataService, airQualityService);
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddSingleton(airQualityService);
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var airQualityFactory = new AirQualityServiceFactory(serviceProvider, new SystemDateTimeProvider());
+            var controller = new AirQualityController(metadataService, airQualityFactory);
 
             var request = new AirQualityRequest()
             {
