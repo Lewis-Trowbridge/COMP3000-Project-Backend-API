@@ -115,6 +115,7 @@ namespace COMP3000_Project_Backend_API.Services
 
             return new AirQualityInfo()
             {
+                Type = InfoType.Recorded,
                 Value = value,
                 Timestamp = timestamp,
                 Unit = PM25Unit,
