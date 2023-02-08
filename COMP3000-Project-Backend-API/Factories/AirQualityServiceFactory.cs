@@ -1,5 +1,5 @@
-﻿using SimpleDateTimeProvider;
-using COMP3000_Project_Backend_API.Services;
+﻿using COMP3000_Project_Backend_API.Services;
+using SimpleDateTimeProvider;
 
 namespace COMP3000_Project_Backend_API.Factories
 {

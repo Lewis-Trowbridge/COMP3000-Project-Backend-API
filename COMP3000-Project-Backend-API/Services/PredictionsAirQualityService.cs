@@ -1,7 +1,7 @@
-﻿using COMP3000_Project_Backend_API.Models;
-using COMP3000_Project_Backend_API.Models.Predictions;
+﻿using System.Text.Json;
+using COMP3000_Project_Backend_API.Models;
 using COMP3000_Project_Backend_API.Models.MongoDB;
-using System.Text.Json;
+using COMP3000_Project_Backend_API.Models.Predictions;
 
 namespace COMP3000_Project_Backend_API.Services
 {
@@ -41,13 +41,13 @@ namespace COMP3000_Project_Backend_API.Services
                 if (data != null)
                 {
                     return new AirQualityInfo()
-                                    {
-                                        Timestamp = utcTimestamp,
-                                        Value = Convert.ToSingle(data.Outputs[0][0]),
-                                        Unit = Unit,
-                                        Station = metadata.ToStation(),
-                                        LicenseInfo = LicenseInfo,
-                                    };
+                    {
+                        Timestamp = utcTimestamp,
+                        Value = Convert.ToSingle(data.Outputs[0][0]),
+                        Unit = Unit,
+                        Station = metadata.ToStation(),
+                        LicenseInfo = LicenseInfo,
+                    };
                 }
                 return null;
             }

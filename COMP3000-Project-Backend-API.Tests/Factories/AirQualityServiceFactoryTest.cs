@@ -1,8 +1,8 @@
-﻿using COMP3000_Project_Backend_API.Factories;
+﻿using System.Globalization;
+using COMP3000_Project_Backend_API.Factories;
 using COMP3000_Project_Backend_API.Services;
-using System.Globalization;
-using SimpleDateTimeProvider;
 using Microsoft.Extensions.DependencyInjection;
+using SimpleDateTimeProvider;
 
 namespace COMP3000_Project_Backend_API.Tests.Factories
 {

@@ -1,9 +1,9 @@
 ﻿using COMP3000_Project_Backend_API.Controllers;
+using COMP3000_Project_Backend_API.Factories;
 using COMP3000_Project_Backend_API.Models;
 using COMP3000_Project_Backend_API.Models.MongoDB;
 using COMP3000_Project_Backend_API.Models.Request;
 using COMP3000_Project_Backend_API.Services;
-using COMP3000_Project_Backend_API.Factories;
 
 namespace COMP3000_Project_Backend_API.Tests.Controllers
 {
@@ -39,7 +39,7 @@ namespace COMP3000_Project_Backend_API.Tests.Controllers
             mockMetadataService.Setup(x => x.GetAsync(testBbox)).ReturnsAsync(metadataList);
 
             mockAirQualityService.Setup(x => x.GetAirQualityInfo(It.IsAny<DEFRAMetadata>(), It.IsAny<DateTime>())).ReturnsAsync(new AirQualityInfo());
-            
+
             mockAirQualityFactory.Setup(x => x.GetAirQualityService(testDatetime)).Returns(mockAirQualityService.Object);
 
             var controller = new AirQualityController(mockMetadataService.Object, mockAirQualityFactory.Object);

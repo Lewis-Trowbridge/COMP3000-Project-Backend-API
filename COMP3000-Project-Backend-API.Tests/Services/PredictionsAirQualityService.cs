@@ -1,10 +1,10 @@
 ﻿using System;
-using COMP3000_Project_Backend_API.Services;
+using System.Net.Http.Json;
+using System.Text.Json;
 using COMP3000_Project_Backend_API.Models;
 using COMP3000_Project_Backend_API.Models.MongoDB;
 using COMP3000_Project_Backend_API.Models.Predictions;
-using System.Text.Json;
-using System.Net.Http.Json;
+using COMP3000_Project_Backend_API.Services;
 
 namespace COMP3000_Project_Backend_API.Tests.Services
 {
@@ -26,9 +26,12 @@ namespace COMP3000_Project_Backend_API.Tests.Services
                 SiteName = testStationId,
                 Coords = new double[] { 0, 0 }
             };
-            var expectedRequest = new PredictionRequest() { Inputs = new List<List<double>>{ new List<double>
+            var expectedRequest = new PredictionRequest()
+            {
+                Inputs = new List<List<double>>{ new List<double>
             { testDateTime.ToUnixTimeSeconds(), testMetadata.Coords[1], testMetadata.Coords[0] }
-            } };
+            }
+            };
             var handler = new Mock<HttpMessageHandler>();
             handler.SetupRequest(HttpMethod.Post, testAddress)
                 .ReturnsResponse(System.Net.HttpStatusCode.OK, JsonSerializer.Serialize(ValidResponse));
@@ -98,7 +101,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
             var actual = await service.GetAirQualityInfo(testMetadata, testDateTime.UtcDateTime);
 
             actual.Should().BeEquivalentTo(expected);
-            
+
         }
     }
 }
