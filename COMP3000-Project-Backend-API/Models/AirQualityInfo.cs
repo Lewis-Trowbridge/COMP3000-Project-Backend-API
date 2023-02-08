@@ -1,7 +1,11 @@
-﻿namespace COMP3000_Project_Backend_API.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace COMP3000_Project_Backend_API.Models;
 
 public class AirQualityInfo
 {
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public InfoType Type { get; set; }
     public float Value { get; set; }
     public string? Unit { get; set; }
     public DateTime Timestamp { get; set; }

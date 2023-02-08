@@ -89,6 +89,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
 
             var expected = new AirQualityInfo()
             {
+                Type = InfoType.Predicted,
                 Timestamp = testDateTime.UtcDateTime,
                 Value = Convert.ToSingle(ValidOutput),
                 Unit = PredictionsAirQualityService.Unit,

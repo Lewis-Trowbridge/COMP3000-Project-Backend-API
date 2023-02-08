@@ -42,6 +42,7 @@ namespace COMP3000_Project_Backend_API.Services
                 {
                     return new AirQualityInfo()
                     {
+                        Type = InfoType.Predicted,
                         Timestamp = utcTimestamp,
                         Value = Convert.ToSingle(data.Outputs[0][0]),
                         Unit = Unit,
