@@ -24,7 +24,7 @@ public class AirQualityController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<AirQualityInfo[]> GetAirQuality([FromQuery]AirQualityRequest request)
+    public async Task<AirQualityInfo[]> GetAirQuality([FromQuery] AirQualityRequest request)
     {
         var service = _airQualityServiceFactory.GetAirQualityService(request.Timestamp);
         var stations = await _metadataService.GetAsync(request.Bbox!);
