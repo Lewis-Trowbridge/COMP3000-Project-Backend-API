@@ -87,7 +87,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
             var client = handler.CreateClient();
             client.BaseAddress = new Uri(PredictionsAirQualityService.BaseAddress);
 
-            var expected = new AirQualityInfo()
+            var expected = new ReadingInfo()
             {
                 Type = InfoType.Predicted,
                 Timestamp = testDateTime.UtcDateTime,

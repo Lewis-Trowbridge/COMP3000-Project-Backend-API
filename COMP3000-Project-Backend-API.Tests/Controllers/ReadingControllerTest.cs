@@ -7,10 +7,10 @@ using COMP3000_Project_Backend_API.Services;
 
 namespace COMP3000_Project_Backend_API.Tests.Controllers
 {
-    public class AirQualityControllerTest
+    public class ReadingControllerTest
     {
         [Fact]
-        public async void AirQualityController_GetAirQuality_CallsGetAirQualityInfoForEachMetadata()
+        public async void ReadingController_GetAirQuality_CallsGetAirQualityInfoForEachMetadata()
         {
             var mockMetadataService = new Mock<IMetadataService>();
             var mockAirQualityService = new Mock<IAirQualityService>();
@@ -30,7 +30,7 @@ namespace COMP3000_Project_Backend_API.Tests.Controllers
 
             var testDatetime = DateTime.MinValue;
 
-            var testAirQualityRequest = new AirQualityRequest()
+            var testAirQualityRequest = new ReadingRequest()
             {
                 Bbox = testBbox,
                 Timestamp = testDatetime
@@ -38,11 +38,11 @@ namespace COMP3000_Project_Backend_API.Tests.Controllers
 
             mockMetadataService.Setup(x => x.GetAsync(testBbox)).ReturnsAsync(metadataList);
 
-            mockAirQualityService.Setup(x => x.GetAirQualityInfo(It.IsAny<DEFRAMetadata>(), It.IsAny<DateTime>())).ReturnsAsync(new AirQualityInfo());
+            mockAirQualityService.Setup(x => x.GetAirQualityInfo(It.IsAny<DEFRAMetadata>(), It.IsAny<DateTime>())).ReturnsAsync(new ReadingInfo());
 
             mockAirQualityFactory.Setup(x => x.GetAirQualityService(testDatetime)).Returns(mockAirQualityService.Object);
 
-            var controller = new AirQualityController(mockMetadataService.Object, mockAirQualityFactory.Object);
+            var controller = new ReadingController(mockMetadataService.Object, mockAirQualityFactory.Object);
 
             await controller.GetAirQuality(testAirQualityRequest);
 
@@ -52,7 +52,7 @@ namespace COMP3000_Project_Backend_API.Tests.Controllers
         }
 
         [Fact]
-        public async void AirQualityController_GetAirQuality_ReturnsDataInCorrectFormat()
+        public async void ReadingController_GetAirQuality_ReturnsDataInCorrectFormat()
         {
             var mockMetadataService = new Mock<IMetadataService>();
             var mockAirQualityService = new Mock<IAirQualityService>();
@@ -72,7 +72,7 @@ namespace COMP3000_Project_Backend_API.Tests.Controllers
 
             var testDatetime = DateTime.MinValue;
 
-            var testAirQualityRequest = new AirQualityRequest()
+            var testAirQualityRequest = new ReadingRequest()
             {
                 Bbox = testBbox,
                 Timestamp = testDatetime
@@ -80,10 +80,10 @@ namespace COMP3000_Project_Backend_API.Tests.Controllers
 
             mockMetadataService.Setup(x => x.GetAsync(testBbox)).ReturnsAsync(metadataList);
 
-            var airQuality1 = new AirQualityInfo() { Station = new Station() { Name = "1" } };
-            var airQuality2 = new AirQualityInfo() { Station = new Station() { Name = "2" } };
-            var airQuality3 = new AirQualityInfo() { Station = new Station() { Name = "3" } };
-            var expected = new AirQualityInfo[] { airQuality1, airQuality2, airQuality3 };
+            var airQuality1 = new ReadingInfo() { Station = new Station() { Name = "1" } };
+            var airQuality2 = new ReadingInfo() { Station = new Station() { Name = "2" } };
+            var airQuality3 = new ReadingInfo() { Station = new Station() { Name = "3" } };
+            var expected = new ReadingInfo[] { airQuality1, airQuality2, airQuality3 };
 
             mockAirQualityService.Setup(x => x.GetAirQualityInfo(metadata1, It.IsAny<DateTime>())).ReturnsAsync(airQuality1);
             mockAirQualityService.Setup(x => x.GetAirQualityInfo(metadata2, It.IsAny<DateTime>())).ReturnsAsync(airQuality2);
@@ -91,7 +91,7 @@ namespace COMP3000_Project_Backend_API.Tests.Controllers
 
             mockAirQualityFactory.Setup(x => x.GetAirQualityService(testDatetime)).Returns(mockAirQualityService.Object);
 
-            var controller = new AirQualityController(mockMetadataService.Object, mockAirQualityFactory.Object);
+            var controller = new ReadingController(mockMetadataService.Object, mockAirQualityFactory.Object);
 
             var actual = await controller.GetAirQuality(testAirQualityRequest);
 
@@ -99,7 +99,7 @@ namespace COMP3000_Project_Backend_API.Tests.Controllers
         }
 
         [Fact]
-        public async void AirQualityController_GetAirQuality_FiltersNullReturnsFromAirQualityService()
+        public async void ReadingController_GetAirQuality_FiltersNullReturnsFromAirQualityService()
         {
             var mockMetadataService = new Mock<IMetadataService>();
             var mockAirQualityService = new Mock<IAirQualityService>();
@@ -119,7 +119,7 @@ namespace COMP3000_Project_Backend_API.Tests.Controllers
 
             var testDatetime = DateTime.MinValue;
 
-            var testAirQualityRequest = new AirQualityRequest()
+            var testAirQualityRequest = new ReadingRequest()
             {
                 Bbox = testBbox,
                 Timestamp = testDatetime
@@ -127,17 +127,17 @@ namespace COMP3000_Project_Backend_API.Tests.Controllers
 
             mockMetadataService.Setup(x => x.GetAsync(testBbox)).ReturnsAsync(metadataList);
 
-            var airQuality1 = new AirQualityInfo() { Station = new Station() { Name = "1" } };
-            var airQuality3 = new AirQualityInfo() { Station = new Station() { Name = "3" } };
-            var expected = new AirQualityInfo[] { airQuality1, airQuality3 };
+            var airQuality1 = new ReadingInfo() { Station = new Station() { Name = "1" } };
+            var airQuality3 = new ReadingInfo() { Station = new Station() { Name = "3" } };
+            var expected = new ReadingInfo[] { airQuality1, airQuality3 };
 
             mockAirQualityService.Setup(x => x.GetAirQualityInfo(metadata1, It.IsAny<DateTime>())).ReturnsAsync(airQuality1);
-            mockAirQualityService.Setup(x => x.GetAirQualityInfo(metadata2, It.IsAny<DateTime>())).ReturnsAsync(null as AirQualityInfo);
+            mockAirQualityService.Setup(x => x.GetAirQualityInfo(metadata2, It.IsAny<DateTime>())).ReturnsAsync(null as ReadingInfo);
             mockAirQualityService.Setup(x => x.GetAirQualityInfo(metadata3, It.IsAny<DateTime>())).ReturnsAsync(airQuality3);
 
             mockAirQualityFactory.Setup(x => x.GetAirQualityService(testDatetime)).Returns(mockAirQualityService.Object);
 
-            var controller = new AirQualityController(mockMetadataService.Object, mockAirQualityFactory.Object);
+            var controller = new ReadingController(mockMetadataService.Object, mockAirQualityFactory.Object);
 
             var actual = await controller.GetAirQuality(testAirQualityRequest);
 

@@ -1,27 +1,24 @@
 ﻿using System.Globalization;
-using System.Net.Http.Json;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
 using COMP3000_Project_Backend_API.IntegrationTests.Support;
 using COMP3000_Project_Backend_API.Models;
 using COMP3000_Project_Backend_API.Models.MongoDB;
-using COMP3000_Project_Backend_API.Models.Request;
 using COMP3000_Project_Backend_API.Services;
 using COMP3000_Project_Backend_API.TestUtilities.Support;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using SimpleDateTimeProvider;
 
 namespace COMP3000_Project_Backend_API.FunctionalTests.Controllers
 {
-    public class AirQualityControllerTest : IClassFixture<WebApplicationFactory<Program>>, IClassFixture<MongoDBFixture>, IDisposable
+    public class ReadingControllerTest : IClassFixture<WebApplicationFactory<Program>>, IClassFixture<MongoDBFixture>, IDisposable
     {
         private HttpClient _client;
         private MongoDBFixture _mongoDBFixture;
 
-        public AirQualityControllerTest(WebApplicationFactory<Program> webApplicationFactory, MongoDBFixture mongoDBFixture)
+        public ReadingControllerTest(WebApplicationFactory<Program> webApplicationFactory, MongoDBFixture mongoDBFixture)
         {
             _mongoDBFixture = mongoDBFixture;
             mongoDBFixture.runner.Import("metadata", "metadata", "Assets/mongo.json", "--jsonArray");
@@ -45,7 +42,7 @@ namespace COMP3000_Project_Backend_API.FunctionalTests.Controllers
         }
 
         [Fact]
-        public async void AirQualityController_GetAirQuality_WithTimestampReturns200AndValidData()
+        public async void ReadingController_GetAirQuality_WithTimestampReturns200AndValidData()
         {
             var timestamp = DateTime.Parse("2022-01-04T01:00:00.000Z", CultureInfo.GetCultureInfo("en-GB"));
             var bbox = new BoundingBox()
@@ -62,15 +59,15 @@ namespace COMP3000_Project_Backend_API.FunctionalTests.Controllers
             var stringActual = await response.Content.ReadAsStringAsync();
             // For parsing the unicode copyright symbol in the response
             var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true, Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) };
-            var actual = JsonSerializer.Deserialize<AirQualityInfo[]>(stringActual, options);
-            var expected = JsonSerializer.Deserialize<AirQualityInfo[]>(ValidJSON, options);
+            var actual = JsonSerializer.Deserialize<ReadingInfo[]>(stringActual, options);
+            var expected = JsonSerializer.Deserialize<ReadingInfo[]>(ValidJSON, options);
 
             actual.Should().BeEquivalentTo(expected);
 
         }
 
         [Fact]
-        public async void AirQualityController_GetAirQuality_WithoutTimestampReturns200AndValidData()
+        public async void ReadingController_GetAirQuality_WithoutTimestampReturns200AndValidData()
         {
             var bbox = new BoundingBox()
             {
@@ -86,21 +83,21 @@ namespace COMP3000_Project_Backend_API.FunctionalTests.Controllers
             var stringActual = await response.Content.ReadAsStringAsync();
             // For parsing the unicode copyright symbol in the response
             var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true, Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) };
-            var actual = JsonSerializer.Deserialize<AirQualityInfo[]>(stringActual, options);
-            var expected = JsonSerializer.Deserialize<AirQualityInfo[]>(ValidNullTimestampJSON, options);
+            var actual = JsonSerializer.Deserialize<ReadingInfo[]>(stringActual, options);
+            var expected = JsonSerializer.Deserialize<ReadingInfo[]>(ValidNullTimestampJSON, options);
 
             actual.Should().BeEquivalentTo(expected);
 
         }
 
         [Theory]
-        [InlineData(@"api/airquality?bbox.bottomLeftX=&bbox.bottomLeftY=1&bbox.topRightX=1&bbox.topRightY=1&timestamp=2022-01-04T01:00:00.000Z")]
-        [InlineData(@"api/airquality?bbox.bottomLeftX=1&bbox.bottomLeftY=&bbox.topRightX=1&bbox.topRightY=1&timestamp=2022-01-04T01:00:00.000Z")]
-        [InlineData(@"api/airquality?bbox.bottomLeftX=1&bbox.bottomLeftY=1&bbox.topRightX=&bbox.topRightY=1&timestamp=2022-01-04T01:00:00.000Z")]
-        [InlineData(@"api/airquality?bbox.bottomLeftX=1&bbox.bottomLeftY=1&bbox.topRightX=1&bbox.topRightY=&timestamp=2022-01-04T01:00:00.000Z")]
-        [InlineData(@"api/airquality?bbox.bottomLeftX=&bbox.bottomLeftY=&bbox.topRightX=&bbox.topRightY=&timestamp=2022-01-04T01:00:00.000Z")]
+        [InlineData(@"airquality?bbox.bottomLeftX=&bbox.bottomLeftY=1&bbox.topRightX=1&bbox.topRightY=1&timestamp=2022-01-04T01:00:00.000Z")]
+        [InlineData(@"airquality?bbox.bottomLeftX=1&bbox.bottomLeftY=&bbox.topRightX=1&bbox.topRightY=1&timestamp=2022-01-04T01:00:00.000Z")]
+        [InlineData(@"airquality?bbox.bottomLeftX=1&bbox.bottomLeftY=1&bbox.topRightX=&bbox.topRightY=1&timestamp=2022-01-04T01:00:00.000Z")]
+        [InlineData(@"airquality?bbox.bottomLeftX=1&bbox.bottomLeftY=1&bbox.topRightX=1&bbox.topRightY=&timestamp=2022-01-04T01:00:00.000Z")]
+        [InlineData(@"airquality?bbox.bottomLeftX=&bbox.bottomLeftY=&bbox.topRightX=&bbox.topRightY=&timestamp=2022-01-04T01:00:00.000Z")]
 
-        public async void AirQualityController_GetAirQuality_MissingParamReturns400(string requestUri)
+        public async void ReadingController_GetAirQuality_MissingParamReturns400(string requestUri)
         {
             var response = await _client.GetAsync(requestUri);
             response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
@@ -111,13 +108,13 @@ namespace COMP3000_Project_Backend_API.FunctionalTests.Controllers
 
         private static string ObjectToQueryString(BoundingBox bbox)
         {
-            return $"api/airquality?bbox.bottomLeftX={bbox.BottomLeftX}&bbox.bottomLeftY={bbox.BottomLeftY}&bbox.topRightX={bbox.TopRightX}&bbox.topRightY={bbox.TopRightY}";
+            return $"airquality?bbox.bottomLeftX={bbox.BottomLeftX}&bbox.bottomLeftY={bbox.BottomLeftY}&bbox.topRightX={bbox.TopRightX}&bbox.topRightY={bbox.TopRightY}";
 
         }
 
         private static string ObjectToQueryString(BoundingBox bbox, DateTime timestamp)
         {
-            return $"api/airquality?bbox.bottomLeftX={bbox.BottomLeftX}&bbox.bottomLeftY={bbox.BottomLeftY}&bbox.topRightX={bbox.TopRightX}&bbox.topRightY={bbox.TopRightY}&timestamp={timestamp.ToUniversalTime().ToString("u").Replace(" ", "T")}";
+            return $"airquality?bbox.bottomLeftX={bbox.BottomLeftX}&bbox.bottomLeftY={bbox.BottomLeftY}&bbox.topRightX={bbox.TopRightX}&bbox.topRightY={bbox.TopRightY}&timestamp={timestamp.ToUniversalTime().ToString("u").Replace(" ", "T")}";
         }
 
         public void Dispose()

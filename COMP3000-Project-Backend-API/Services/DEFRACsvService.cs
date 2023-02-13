@@ -21,7 +21,7 @@ namespace COMP3000_Project_Backend_API.Services
             _dateTimeProvider = dateTimeProvider;
         }
 
-        public async Task<AirQualityInfo?> GetAirQualityInfo(DEFRAMetadata metadata, DateTime? timestamp)
+        public async Task<ReadingInfo?> GetAirQualityInfo(DEFRAMetadata metadata, DateTime? timestamp)
         {
             DateTime updatedTimestamp = timestamp ?? _dateTimeProvider.UtcNow.Date;
 
@@ -97,7 +97,7 @@ namespace COMP3000_Project_Backend_API.Services
                     ? float.Parse(stringRecord) : -1f;
         }
 
-        private static AirQualityInfo? AssembleAirQualityInfo(DEFRAMetadata metadata, string dateString, string hourAndMinuteString, float value)
+        private static ReadingInfo? AssembleAirQualityInfo(DEFRAMetadata metadata, string dateString, string hourAndMinuteString, float value)
         {
             var timestamp = hourAndMinuteString != " 24:00" ?
                 DateTime.Parse($"{dateString} {hourAndMinuteString.Trim()}:00", CultureInfo.GetCultureInfo("en-GB")) :
@@ -106,14 +106,14 @@ namespace COMP3000_Project_Backend_API.Services
             return AssembleAirQualityInfo(metadata, timestamp, value);
         }
 
-        private static AirQualityInfo? AssembleAirQualityInfo(DEFRAMetadata metadata, DateTime timestamp, float value)
+        private static ReadingInfo? AssembleAirQualityInfo(DEFRAMetadata metadata, DateTime timestamp, float value)
         {
             if (value == -1)
             {
                 return null;
             }
 
-            return new AirQualityInfo()
+            return new ReadingInfo()
             {
                 Type = InfoType.Recorded,
                 Value = value,

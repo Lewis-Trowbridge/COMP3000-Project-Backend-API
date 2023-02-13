@@ -78,7 +78,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
             client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
             var service = new DEFRACsvService(client, new SystemDateTimeProvider());
 
-            var expected = new AirQualityInfo()
+            var expected = new ReadingInfo()
             {
                 Value = 3.396F,
                 Unit = DEFRACsvService.PM25Unit,
@@ -122,7 +122,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
             client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
             var service = new DEFRACsvService(client, new SystemDateTimeProvider());
 
-            var expected = new AirQualityInfo()
+            var expected = new ReadingInfo()
             {
                 Value = 3.396F,
                 Unit = DEFRACsvService.PM25Unit,
@@ -166,7 +166,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
             client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
             var service = new DEFRACsvService(client, new SystemDateTimeProvider());
 
-            var expected = new AirQualityInfo()
+            var expected = new ReadingInfo()
             {
                 Value = 3.396F,
                 Unit = DEFRACsvService.PM25Unit,
@@ -211,7 +211,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
             client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
             var service = new DEFRACsvService(client, new SystemDateTimeProvider());
 
-            var expected = new AirQualityInfo()
+            var expected = new ReadingInfo()
             {
                 Value = 3.396F,
                 Unit = DEFRACsvService.PM25Unit,
@@ -317,7 +317,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
             var service = new DEFRACsvService(client, mockDateTimeProvider);
 
             var expectedDatetime = DateTime.Parse("11-01-2022 00:00:00", CultureInfo.GetCultureInfo("en-GB"));
-            var expected = new AirQualityInfo()
+            var expected = new ReadingInfo()
             {
                 Value = 1.792F,
                 Unit = DEFRACsvService.PM25Unit,
@@ -364,7 +364,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
             var service = new DEFRACsvService(client, mockDateTimeProvider);
 
             var expectedDatetime = DateTime.Parse("01-01-2022 23:00:00", CultureInfo.GetCultureInfo("en-GB"));
-            var expected = new AirQualityInfo()
+            var expected = new ReadingInfo()
             {
                 Value = 10.354F,
                 Unit = DEFRACsvService.PM25Unit,

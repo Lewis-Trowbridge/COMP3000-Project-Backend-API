@@ -12,23 +12,23 @@ namespace COMP3000_Project_Backend_API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AirQualityController : ControllerBase
+public class ReadingController : ControllerBase
 {
     private readonly IMetadataService _metadataService;
     private readonly IAirQualityServiceFactory _airQualityServiceFactory;
 
-    public AirQualityController(IMetadataService metadataService, IAirQualityServiceFactory airQualityServiceFactory)
+    public ReadingController(IMetadataService metadataService, IAirQualityServiceFactory airQualityServiceFactory)
     {
         _metadataService = metadataService;
         _airQualityServiceFactory = airQualityServiceFactory;
     }
 
-    [HttpGet]
-    public async Task<AirQualityInfo[]> GetAirQuality([FromQuery] AirQualityRequest request)
+    [HttpGet("/airquality")]
+    public async Task<ReadingInfo[]> GetAirQuality([FromQuery] ReadingRequest request)
     {
         var service = _airQualityServiceFactory.GetAirQualityService(request.Timestamp);
         var stations = await _metadataService.GetAsync(request.Bbox!);
-        var tasks = new List<Task<AirQualityInfo?>>();
+        var tasks = new List<Task<ReadingInfo?>>();
 
         foreach (var station in stations)
         {
@@ -38,5 +38,11 @@ public class AirQualityController : ControllerBase
         return (await Task.WhenAll(tasks))
             .Where(x => x is not null)
             .ToArray()!;
+    }
+
+    [HttpGet("/temperature")]
+    public async Task<ReadingInfo[]> GetTemperature([FromQuery] ReadingRequest request)
+    {
+        throw new NotImplementedException();
     }
 }
