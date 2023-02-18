@@ -18,7 +18,7 @@ public class ReadingController : ControllerBase
     {
         _metadataService = metadataService;
         _airQualityServiceFactory = airQualityServiceFactory;
-        _temperatureService= temperatureService;
+        _temperatureService = temperatureService;
     }
 
     [HttpGet("/airquality")]

@@ -25,7 +25,6 @@ namespace COMP3000_Project_Backend_API.Services
                 { "date", timestamp?.ToIsoTimestamp() }
             };
             var query = QueryString.Create(queryValues);
-            var e = query.ToString();
             var response = await _httpClient.GetAsync("/data" + query.ToString());
             if (response.IsSuccessStatusCode)
             {
