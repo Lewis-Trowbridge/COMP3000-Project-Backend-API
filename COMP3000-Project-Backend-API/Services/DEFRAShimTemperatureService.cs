@@ -24,8 +24,7 @@ namespace COMP3000_Project_Backend_API.Services
                 { "site", metadata.Id },
                 { "date", timestamp?.ToIsoTimestamp() }
             };
-            var query = QueryString.Create(queryValues);
-            var response = await _httpClient.GetAsync("/data" + query.ToString());
+            var response = await _httpClient.GetAsync("/data" + QueryString.Create(queryValues).ToString());
             if (response.IsSuccessStatusCode)
             {
                 var data = await response.Content.ReadFromJsonAsync<TemperatureResponse>();
