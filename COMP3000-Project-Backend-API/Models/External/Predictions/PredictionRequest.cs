@@ -1,4 +1,4 @@
-﻿namespace COMP3000_Project_Backend_API.Models.Predictions
+﻿namespace COMP3000_Project_Backend_API.Models.External.Predictions
 {
     public class PredictionRequest
     {

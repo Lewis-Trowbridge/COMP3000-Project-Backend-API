@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using System.Globalization;
 using COMP3000_Project_Backend_API.Controllers;
 using COMP3000_Project_Backend_API.Factories;
 using COMP3000_Project_Backend_API.IntegrationTests.Support;
@@ -39,7 +38,7 @@ namespace COMP3000_Project_Backend_API.IntegrationTests.Controllers
             serviceCollection.AddSingleton(airQualityService);
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var airQualityFactory = new AirQualityServiceFactory(serviceProvider, new SystemDateTimeProvider());
-            var controller = new ReadingController(metadataService, airQualityFactory);
+            var controller = new ReadingController(metadataService, airQualityFactory, Mock.Of<ITemperatureService>());
 
             var request = new ReadingRequest()
             {

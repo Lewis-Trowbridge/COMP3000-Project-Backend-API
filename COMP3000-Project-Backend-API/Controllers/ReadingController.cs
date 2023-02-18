@@ -1,12 +1,8 @@
 ﻿using COMP3000_Project_Backend_API.Factories;
 using COMP3000_Project_Backend_API.Models;
-using COMP3000_Project_Backend_API.Models.MongoDB;
 using COMP3000_Project_Backend_API.Models.Request;
 using COMP3000_Project_Backend_API.Services;
-using COMP3000_Project_Backend_API.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc;
-using SimpleDateTimeProvider;
 
 namespace COMP3000_Project_Backend_API.Controllers;
 
@@ -16,11 +12,13 @@ public class ReadingController : ControllerBase
 {
     private readonly IMetadataService _metadataService;
     private readonly IAirQualityServiceFactory _airQualityServiceFactory;
+    private readonly ITemperatureService _temperatureService;
 
-    public ReadingController(IMetadataService metadataService, IAirQualityServiceFactory airQualityServiceFactory)
+    public ReadingController(IMetadataService metadataService, IAirQualityServiceFactory airQualityServiceFactory, ITemperatureService temperatureService)
     {
         _metadataService = metadataService;
         _airQualityServiceFactory = airQualityServiceFactory;
+        _temperatureService= temperatureService;
     }
 
     [HttpGet("/airquality")]
@@ -43,6 +41,16 @@ public class ReadingController : ControllerBase
     [HttpGet("/temperature")]
     public async Task<ReadingInfo[]> GetTemperature([FromQuery] ReadingRequest request)
     {
-        throw new NotImplementedException();
+        var stations = await _metadataService.GetAsync(request.Bbox!);
+        var tasks = new List<Task<ReadingInfo?>>();
+
+        foreach (var station in stations)
+        {
+            tasks.Add(_temperatureService.GetTemperatureInfo(station, request.Timestamp));
+        }
+
+        return (await Task.WhenAll(tasks))
+            .Where(x => x is not null)
+            .ToArray()!;
     }
 }

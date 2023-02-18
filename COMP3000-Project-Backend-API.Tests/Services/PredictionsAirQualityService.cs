@@ -2,8 +2,8 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using COMP3000_Project_Backend_API.Models;
+using COMP3000_Project_Backend_API.Models.External.Predictions;
 using COMP3000_Project_Backend_API.Models.MongoDB;
-using COMP3000_Project_Backend_API.Models.Predictions;
 using COMP3000_Project_Backend_API.Services;
 
 namespace COMP3000_Project_Backend_API.Tests.Services
