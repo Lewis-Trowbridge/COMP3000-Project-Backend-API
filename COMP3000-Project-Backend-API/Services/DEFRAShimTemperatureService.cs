@@ -22,8 +22,12 @@ namespace COMP3000_Project_Backend_API.Services
             var queryValues = new Dictionary<string, string?>
             {
                 { "site", metadata.Id },
-                { "date", timestamp?.ToIsoTimestamp() }
             };
+
+            if (timestamp is not null) {
+                queryValues.Add("date", timestamp.Value.ToIsoTimestamp());
+            }
+
             var response = await _httpClient.GetAsync("/data" + QueryString.Create(queryValues).ToString());
             if (response.IsSuccessStatusCode)
             {
@@ -32,7 +36,7 @@ namespace COMP3000_Project_Backend_API.Services
                 {
                     LicenseInfo = LicenseString,
                     Unit = Unit,
-                    Timestamp = timestamp.Value,
+                    Timestamp = data.Timestamp,
                     Station = metadata.ToStation(),
                     Value = data.Temperature
                 };

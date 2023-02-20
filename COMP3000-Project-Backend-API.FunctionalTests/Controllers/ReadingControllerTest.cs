@@ -15,8 +15,8 @@ namespace COMP3000_Project_Backend_API.FunctionalTests.Controllers
 {
     public class ReadingControllerTest : IClassFixture<WebApplicationFactory<Program>>, IClassFixture<MongoDBFixture>, IDisposable
     {
-        private HttpClient _client;
-        private MongoDBFixture _mongoDBFixture;
+        private readonly HttpClient _client;
+        private readonly MongoDBFixture _mongoDBFixture;
 
         public ReadingControllerTest(WebApplicationFactory<Program> webApplicationFactory, MongoDBFixture mongoDBFixture)
         {
@@ -36,6 +36,8 @@ namespace COMP3000_Project_Backend_API.FunctionalTests.Controllers
                     services.AddSingleton(DEFRAUCsvUtilities.GetMockDateTimeProvider());
                     services.AddHttpClient<DEFRACsvService>()
                     .ConfigureHttpMessageHandlerBuilder(builder => builder.PrimaryHandler = DEFRAUCsvUtilities.GetHttpMessageHandler());
+                    services.AddHttpClient<ITemperatureService, DEFRAShimTemperatureService>()
+                    .ConfigureHttpMessageHandlerBuilder(builder => builder.PrimaryHandler = DEFRATemperatureShimUtilities.GetHttpMessageHandler());
                 });
             })
                 .CreateClient();
@@ -53,14 +55,14 @@ namespace COMP3000_Project_Backend_API.FunctionalTests.Controllers
                 TopRightY = 1.9483351626784629
             };
 
-            var response = await _client.GetAsync(ObjectToQueryString(bbox, timestamp));
+            var response = await _client.GetAsync(ObjectToQueryString("airquality", bbox, timestamp));
             response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
             var stringActual = await response.Content.ReadAsStringAsync();
             // For parsing the unicode copyright symbol in the response
             var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true, Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) };
             var actual = JsonSerializer.Deserialize<ReadingInfo[]>(stringActual, options);
-            var expected = JsonSerializer.Deserialize<ReadingInfo[]>(ValidJSON, options);
+            var expected = JsonSerializer.Deserialize<ReadingInfo[]>(ValidAirQualityJSON, options);
 
             actual.Should().BeEquivalentTo(expected);
 
@@ -77,14 +79,14 @@ namespace COMP3000_Project_Backend_API.FunctionalTests.Controllers
                 TopRightY = 1.9483351626784629
             };
 
-            var response = await _client.GetAsync(ObjectToQueryString(bbox));
+            var response = await _client.GetAsync(ObjectToQueryString("airquality", bbox));
             response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
             var stringActual = await response.Content.ReadAsStringAsync();
             // For parsing the unicode copyright symbol in the response
             var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true, Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) };
             var actual = JsonSerializer.Deserialize<ReadingInfo[]>(stringActual, options);
-            var expected = JsonSerializer.Deserialize<ReadingInfo[]>(ValidNullTimestampJSON, options);
+            var expected = JsonSerializer.Deserialize<ReadingInfo[]>(ValidAirQualityNullTimestampJSON, options);
 
             actual.Should().BeEquivalentTo(expected);
 
@@ -103,18 +105,58 @@ namespace COMP3000_Project_Backend_API.FunctionalTests.Controllers
             response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
         }
 
-        private static string ValidJSON { get; } = @"[{""value"":2.263,""unit"":""PM2.5"",""timestamp"":""2022-01-04T01:00:00+00:00"",""licenseInfo"":""\u00A9 Crown copyright 2021 Defra via uk-air.defra.gov.uk, licensed under the Open Government Licence."",""station"":{""name"":""Aberdeen Erroll Park"",""coordinates"":{""lat"":57.1574,""lng"":-2.09477}}},{""value"":1.263,""unit"":""PM2.5"",""timestamp"":""2022-01-04T01:00:00+00:00"",""licenseInfo"":""\u00A9 Crown copyright 2021 Defra via uk-air.defra.gov.uk, licensed under the Open Government Licence."",""station"":{""name"":""Aberdeen"",""coordinates"":{""lat"":57.15736,""lng"":-2.094278}}}]";
-        private static string ValidNullTimestampJSON { get; } = @"[{""value"":2.792,""unit"":""PM2.5"",""timestamp"":""2022-01-11T00:00:00"",""licenseInfo"":""\u00A9 Crown copyright 2021 Defra via uk-air.defra.gov.uk, licensed under the Open Government Licence."",""station"":{""name"":""Aberdeen Erroll Park"",""coordinates"":{""lat"":57.1574,""lng"":-2.09477}}},{""value"":1.792,""unit"":""PM2.5"",""timestamp"":""2022-01-11T00:00:00"",""licenseInfo"":""\u00A9 Crown copyright 2021 Defra via uk-air.defra.gov.uk, licensed under the Open Government Licence."",""station"":{""name"":""Aberdeen"",""coordinates"":{""lat"":57.15736,""lng"":-2.094278}}}]";
-
-        private static string ObjectToQueryString(BoundingBox bbox)
+        [Fact]
+        public async void ReadingController_GetTemperature_WithTimestampReturns200AndValidData()
         {
-            return $"airquality?bbox.bottomLeftX={bbox.BottomLeftX}&bbox.bottomLeftY={bbox.BottomLeftY}&bbox.topRightX={bbox.TopRightX}&bbox.topRightY={bbox.TopRightY}";
+            var timestamp = DateTime.Parse("2022-01-04T01:00:00.000Z", CultureInfo.GetCultureInfo("en-GB"));
+            var bbox = new BoundingBox()
+            {
+                BottomLeftX = 49.70890434294886,
+                BottomLeftY = -13.168850856210385,
+                TopRightX = 59.6111417069173,
+                TopRightY = 1.9483351626784629
+            };
+
+            var response = await _client.GetAsync(ObjectToQueryString("temperature", bbox, timestamp));
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+
+            var stringActual = await response.Content.ReadAsStringAsync();
+            // For parsing the unicode copyright symbol in the response
+            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true, Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) };
+            var actual = JsonSerializer.Deserialize<ReadingInfo[]>(stringActual, options);
+            var expected = JsonSerializer.Deserialize<ReadingInfo[]>(ValidTemperatureJSON, options);
+
+            actual.Should().BeEquivalentTo(expected);
 
         }
 
-        private static string ObjectToQueryString(BoundingBox bbox, DateTime timestamp)
+        [Theory]
+        [InlineData(@"temperature?bbox.bottomLeftX=&bbox.bottomLeftY=1&bbox.topRightX=1&bbox.topRightY=1&timestamp=2022-01-04T01:00:00.000Z")]
+        [InlineData(@"temperature?bbox.bottomLeftX=1&bbox.bottomLeftY=&bbox.topRightX=1&bbox.topRightY=1&timestamp=2022-01-04T01:00:00.000Z")]
+        [InlineData(@"temperature?bbox.bottomLeftX=1&bbox.bottomLeftY=1&bbox.topRightX=&bbox.topRightY=1&timestamp=2022-01-04T01:00:00.000Z")]
+        [InlineData(@"temperature?bbox.bottomLeftX=1&bbox.bottomLeftY=1&bbox.topRightX=1&bbox.topRightY=&timestamp=2022-01-04T01:00:00.000Z")]
+        [InlineData(@"temperature?bbox.bottomLeftX=&bbox.bottomLeftY=&bbox.topRightX=&bbox.topRightY=&timestamp=2022-01-04T01:00:00.000Z")]
+
+        public async void ReadingController_GetTemperature_MissingParamReturns400(string requestUri)
         {
-            return $"airquality?bbox.bottomLeftX={bbox.BottomLeftX}&bbox.bottomLeftY={bbox.BottomLeftY}&bbox.topRightX={bbox.TopRightX}&bbox.topRightY={bbox.TopRightY}&timestamp={timestamp.ToUniversalTime().ToString("u").Replace(" ", "T")}";
+            var response = await _client.GetAsync(requestUri);
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
+        }
+
+        private static string ValidAirQualityJSON { get; } = @"[{""value"":2.263,""unit"":""PM2.5"",""timestamp"":""2022-01-04T01:00:00+00:00"",""licenseInfo"":""\u00A9 Crown copyright 2021 Defra via uk-air.defra.gov.uk, licensed under the Open Government Licence."",""station"":{""name"":""Aberdeen Erroll Park"",""coordinates"":{""lat"":57.1574,""lng"":-2.09477}}},{""value"":1.263,""unit"":""PM2.5"",""timestamp"":""2022-01-04T01:00:00+00:00"",""licenseInfo"":""\u00A9 Crown copyright 2021 Defra via uk-air.defra.gov.uk, licensed under the Open Government Licence."",""station"":{""name"":""Aberdeen"",""coordinates"":{""lat"":57.15736,""lng"":-2.094278}}}]";
+        private static string ValidTemperatureJSON { get; } = @"[{""value"":2.0,""unit"":""°C"",""timestamp"":""2022-01-04T01:00:00+00:00"",""licenseInfo"":""\u00A9 Crown copyright 2021 Defra via uk-air.defra.gov.uk, licensed under the Open Government Licence."",""station"":{""name"":""Aberdeen Erroll Park"",""coordinates"":{""lat"":57.1574,""lng"":-2.09477}}},{""value"":1.0,""unit"":""°C"",""timestamp"":""2022-01-04T01:00:00+00:00"",""licenseInfo"":""\u00A9 Crown copyright 2021 Defra via uk-air.defra.gov.uk, licensed under the Open Government Licence."",""station"":{""name"":""Aberdeen"",""coordinates"":{""lat"":57.15736,""lng"":-2.094278}}}]";
+
+        private static string ValidAirQualityNullTimestampJSON { get; } = @"[{""value"":2.792,""unit"":""PM2.5"",""timestamp"":""2022-01-11T00:00:00"",""licenseInfo"":""\u00A9 Crown copyright 2021 Defra via uk-air.defra.gov.uk, licensed under the Open Government Licence."",""station"":{""name"":""Aberdeen Erroll Park"",""coordinates"":{""lat"":57.1574,""lng"":-2.09477}}},{""value"":1.792,""unit"":""PM2.5"",""timestamp"":""2022-01-11T00:00:00"",""licenseInfo"":""\u00A9 Crown copyright 2021 Defra via uk-air.defra.gov.uk, licensed under the Open Government Licence."",""station"":{""name"":""Aberdeen"",""coordinates"":{""lat"":57.15736,""lng"":-2.094278}}}]";
+
+        private static string ObjectToQueryString(string endpoint, BoundingBox bbox)
+        {
+            return $"{endpoint}?bbox.bottomLeftX={bbox.BottomLeftX}&bbox.bottomLeftY={bbox.BottomLeftY}&bbox.topRightX={bbox.TopRightX}&bbox.topRightY={bbox.TopRightY}";
+
+        }
+
+        private static string ObjectToQueryString(string endpoint, BoundingBox bbox, DateTime timestamp)
+        {
+            return $"{endpoint}?bbox.bottomLeftX={bbox.BottomLeftX}&bbox.bottomLeftY={bbox.BottomLeftY}&bbox.topRightX={bbox.TopRightX}&bbox.topRightY={bbox.TopRightY}&timestamp={timestamp.ToUniversalTime().ToString("u").Replace(" ", "T")}";
         }
 
         public void Dispose()
