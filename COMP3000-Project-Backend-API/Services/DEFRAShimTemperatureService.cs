@@ -24,7 +24,8 @@ namespace COMP3000_Project_Backend_API.Services
                 { "site", metadata.Id },
             };
 
-            if (timestamp is not null) {
+            if (timestamp is not null)
+            {
                 queryValues.Add("date", timestamp.Value.ToIsoTimestamp());
             }
 
