@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using COMP3000_Project_Backend_API.Models;
+using COMP3000_Project_Backend_API.Models.External.Predictions;
 using COMP3000_Project_Backend_API.Models.MongoDB;
-using COMP3000_Project_Backend_API.Models.Predictions;
 
 namespace COMP3000_Project_Backend_API.Services
 {
@@ -18,7 +18,7 @@ namespace COMP3000_Project_Backend_API.Services
             _httpClient = httpClient;
         }
 
-        public async Task<AirQualityInfo?> GetAirQualityInfo(DEFRAMetadata metadata, DateTime? timestamp)
+        public async Task<ReadingInfo?> GetAirQualityInfo(DEFRAMetadata metadata, DateTime? timestamp)
         {
             if (!timestamp.HasValue)
             {
@@ -40,7 +40,7 @@ namespace COMP3000_Project_Backend_API.Services
                 var data = await response.Content.ReadFromJsonAsync<PredictionResponse>();
                 if (data != null)
                 {
-                    return new AirQualityInfo()
+                    return new ReadingInfo()
                     {
                         Type = InfoType.Predicted,
                         Timestamp = utcTimestamp,

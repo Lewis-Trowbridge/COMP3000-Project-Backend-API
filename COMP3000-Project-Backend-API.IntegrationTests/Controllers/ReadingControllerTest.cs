@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using System.Globalization;
 using COMP3000_Project_Backend_API.Controllers;
 using COMP3000_Project_Backend_API.Factories;
 using COMP3000_Project_Backend_API.IntegrationTests.Support;
@@ -15,13 +14,13 @@ using SimpleDateTimeProvider;
 namespace COMP3000_Project_Backend_API.IntegrationTests.Controllers
 {
     // Set up
-    public class AirQualityControllerTest : IClassFixture<MongoDBFixture>, IDisposable
+    public class ReadingControllerTest : IClassFixture<MongoDBFixture>, IDisposable
     {
         private MongoDBFixture _mongoDBFixture;
         private MongoClient _mongoClient;
         private IMongoCollection<DEFRAMetadata> _collection;
 
-        public AirQualityControllerTest(MongoDBFixture mongoDBFixture)
+        public ReadingControllerTest(MongoDBFixture mongoDBFixture)
         {
             _mongoDBFixture = mongoDBFixture;
             mongoDBFixture.runner.Import("metadata", "metadata", "Assets/mongo.json", "--jsonArray");
@@ -30,7 +29,7 @@ namespace COMP3000_Project_Backend_API.IntegrationTests.Controllers
         }
 
         [Fact]
-        public async void AirQualityController_GetAirQuality_GetsValidData()
+        public async void ReadingController_GetAirQuality_GetsValidData()
         {
             var metadataService = new MetadataService(_collection);
             var airQualityService = new DEFRACsvService(DEFRAUCsvUtilities.GetMockHttpClient(), new SystemDateTimeProvider());
@@ -39,17 +38,17 @@ namespace COMP3000_Project_Backend_API.IntegrationTests.Controllers
             serviceCollection.AddSingleton(airQualityService);
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var airQualityFactory = new AirQualityServiceFactory(serviceProvider, new SystemDateTimeProvider());
-            var controller = new AirQualityController(metadataService, airQualityFactory);
+            var controller = new ReadingController(metadataService, airQualityFactory, Mock.Of<ITemperatureService>());
 
-            var request = new AirQualityRequest()
+            var request = new ReadingRequest()
             {
                 Bbox = new BoundingBox(49.70890434294886, -13.168850856210385, 59.6111417069173, 1.9483351626784629),
                 Timestamp = timestamp
             };
 
-            var expected = new AirQualityInfo[]
+            var expected = new ReadingInfo[]
             {
-                new AirQualityInfo()
+                new ReadingInfo()
                 {
                     Value = 1.263f,
                     Unit = DEFRACsvService.PM25Unit,
@@ -66,7 +65,7 @@ namespace COMP3000_Project_Backend_API.IntegrationTests.Controllers
                     }
                 },
 
-                new AirQualityInfo()
+                new ReadingInfo()
                 {
                     Value = 2.263f,
                     Unit = DEFRACsvService.PM25Unit,

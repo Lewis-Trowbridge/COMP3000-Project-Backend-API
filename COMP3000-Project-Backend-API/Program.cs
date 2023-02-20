@@ -37,6 +37,9 @@ builder.Services.AddHttpClient<PredictionsAirQualityService>(client =>
 {
     client.BaseAddress = new Uri(PredictionsAirQualityService.BaseAddress);
 });
+builder.Services.AddHttpClient<ITemperatureService, DEFRAShimTemperatureService>(client =>
+    client.BaseAddress = new Uri(DEFRAShimTemperatureService.BaseAddress)
+);
 
 builder.Services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
 builder.Services.AddSingleton<IAirQualityServiceFactory, AirQualityServiceFactory>();

@@ -3,8 +3,8 @@ using COMP3000_Project_Backend_API.Models.MongoDB;
 
 namespace COMP3000_Project_Backend_API.Services
 {
-    public interface IAirQualityService
+    public interface ITemperatureService
     {
-        public Task<ReadingInfo?> GetAirQualityInfo(DEFRAMetadata metadata, DateTime? timestamp);
+        public Task<ReadingInfo?> GetTemperatureInfo(DEFRAMetadata metadata, DateTime? timestamp);
     }
 }
