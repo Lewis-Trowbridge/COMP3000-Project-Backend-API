@@ -1,7 +1,5 @@
 ﻿using COMP3000_Project_Backend_API.Models;
-using COMP3000_Project_Backend_API.Models.External.Shim;
 using COMP3000_Project_Backend_API.Models.MongoDB;
-using COMP3000_Project_Backend_API.Utils;
 
 namespace COMP3000_Project_Backend_API.Services
 {
@@ -20,7 +18,7 @@ namespace COMP3000_Project_Backend_API.Services
         public async Task<ReadingInfo?> GetTemperatureInfo(DEFRAMetadata metadata, DateTime? timestamp)
         {
             var data = await _shimService.GetDataFromShim(metadata, timestamp);
-            if (data is not null)
+            if (data is not null && data.Temperature is not null)
             {
                 return new ReadingInfo()
                 {
@@ -28,7 +26,7 @@ namespace COMP3000_Project_Backend_API.Services
                     Unit = Unit,
                     Timestamp = data.Timestamp,
                     Station = metadata.ToStation(),
-                    Value = data.Temperature
+                    Value = data.Temperature.Value
                 };
             }
             return null;

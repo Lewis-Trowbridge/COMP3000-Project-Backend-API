@@ -39,7 +39,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
                 Unit = DEFRAShimTemperatureService.Unit,
                 Timestamp = fakeShimServiceResponse.Timestamp,
                 Station = TestMetadata.ToStation(),
-                Value = fakeShimServiceResponse.Temperature
+                Value = fakeShimServiceResponse.Temperature.Value
             };
 
             var actual = await service.GetTemperatureInfo(TestMetadata, TestDateTime);

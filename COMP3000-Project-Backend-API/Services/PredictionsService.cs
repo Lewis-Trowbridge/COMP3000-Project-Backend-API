@@ -8,7 +8,6 @@ namespace COMP3000_Project_Backend_API.Services
     public class PredictionsService : IAirQualityService, ITemperatureService
     {
         public static string BaseAddress { get; } = "https://predictions-xsji6nno4q-ew.a.run.app";
-        public static string Unit = "PM2.5";
         public static string LicenseInfo = "\u00A9 Lewis Trowbridge 2023";
 
         private readonly HttpClient _httpClient;
@@ -32,7 +31,7 @@ namespace COMP3000_Project_Backend_API.Services
                 var request = new PredictionRequest()
                 {
                     Inputs = new List<List<double>> { new List<double>{
-                            Convert.ToDouble(((DateTimeOffset)utcTimestamp).ToUnixTimeSeconds()),
+                            ((DateTimeOffset)utcTimestamp).ToUnixTimeSeconds(),
                             // Reverse long/lat metadata to lat/long 
                             metadata.Coords[1],
                             metadata.Coords[0]
@@ -47,7 +46,7 @@ namespace COMP3000_Project_Backend_API.Services
                         Type = InfoType.Predicted,
                         Timestamp = utcTimestamp,
                         Value = Convert.ToSingle(data.Outputs[0][0]),
-                        Unit = Unit,
+                        Unit = DEFRACsvService.PM25Unit,
                         Station = metadata.ToStation(),
                         LicenseInfo = LicenseInfo,
                     };
@@ -58,7 +57,43 @@ namespace COMP3000_Project_Backend_API.Services
 
         public async Task<ReadingInfo?> GetTemperatureInfo(DEFRAMetadata metadata, DateTime? timestamp)
         {
-            throw new NotImplementedException();
+            var utcTimestamp = DateTime.SpecifyKind(timestamp.Value, DateTimeKind.Utc);
+            var latestData = await _shimService.GetDataFromShim(metadata, null);
+            if (latestData is not null)
+            {
+                var request = new PredictionRequest()
+                {
+                    Inputs = new List<List<double>> { new List<double>{
+                            ((DateTimeOffset)utcTimestamp).ToUnixTimeSeconds(),
+                            latestData.NO ?? 0,
+                            latestData.NO2 ?? 0,
+                            latestData.NOXasNO2 ?? 0,
+                            latestData.O3 ?? 0,
+                            latestData.PM10 ?? 0,
+                            latestData.PM25 ?? 0,
+                            latestData.wd ?? 0,
+                            latestData.ws ?? 0,
+                            // Reverse long/lat metadata to lat/long 
+                            metadata.Coords[1],
+                            metadata.Coords[0]
+                        } }
+                };
+                var response = await _httpClient.PostAsJsonAsync("v1/models/temperature:predict", request);
+                var data = await response.Content.ReadFromJsonAsync<PredictionResponse>();
+                if (data != null)
+                {
+                    return new ReadingInfo()
+                    {
+                        Type = InfoType.Predicted,
+                        Timestamp = utcTimestamp,
+                        Value = Convert.ToSingle(data.Outputs[0][0]),
+                        Unit = DEFRAShimTemperatureService.Unit,
+                        Station = metadata.ToStation(),
+                        LicenseInfo = LicenseInfo,
+                    };
+                }
+            }
+            return null;
         }
     }
 }
