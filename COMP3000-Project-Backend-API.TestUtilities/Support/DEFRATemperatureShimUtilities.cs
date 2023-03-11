@@ -18,7 +18,7 @@ namespace COMP3000_Project_Backend_API.TestUtilities.Support
         {
             var handler = GetMockHttpMessageHandler();
             var client = handler.CreateClient();
-            client.BaseAddress = new Uri(DEFRAShimTemperatureService.BaseAddress);
+            client.BaseAddress = new Uri(DEFRAShimService.BaseAddress);
             return client;
         }
 

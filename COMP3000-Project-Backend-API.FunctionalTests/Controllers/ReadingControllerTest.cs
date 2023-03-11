@@ -36,7 +36,7 @@ namespace COMP3000_Project_Backend_API.FunctionalTests.Controllers
                     services.AddSingleton(DEFRAUCsvUtilities.GetMockDateTimeProvider());
                     services.AddHttpClient<DEFRACsvService>()
                     .ConfigureHttpMessageHandlerBuilder(builder => builder.PrimaryHandler = DEFRAUCsvUtilities.GetHttpMessageHandler());
-                    services.AddHttpClient<ITemperatureService, DEFRAShimTemperatureService>()
+                    services.AddHttpClient<IDEFRAShimService, DEFRAShimService>()
                     .ConfigureHttpMessageHandlerBuilder(builder => builder.PrimaryHandler = DEFRATemperatureShimUtilities.GetHttpMessageHandler());
                 });
             })

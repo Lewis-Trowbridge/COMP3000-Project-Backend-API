@@ -26,12 +26,8 @@ public class ReadingController : ControllerBase
     {
         var service = _airQualityServiceFactory.GetAirQualityService(request.Timestamp);
         var stations = await _metadataService.GetAsync(request.Bbox!);
-        var tasks = new List<Task<ReadingInfo?>>();
 
-        foreach (var station in stations)
-        {
-            tasks.Add(service.GetAirQualityInfo(station, request.Timestamp));
-        }
+        var tasks = stations.Select(station => service.GetAirQualityInfo(station, request.Timestamp));
 
         return (await Task.WhenAll(tasks))
             .Where(x => x is not null)
@@ -42,12 +38,8 @@ public class ReadingController : ControllerBase
     public async Task<ReadingInfo[]> GetTemperature([FromQuery] ReadingRequest request)
     {
         var stations = await _metadataService.GetAsync(request.Bbox!);
-        var tasks = new List<Task<ReadingInfo?>>();
 
-        foreach (var station in stations)
-        {
-            tasks.Add(_temperatureService.GetTemperatureInfo(station, request.Timestamp));
-        }
+        var tasks = stations.Select(station => _temperatureService.GetTemperatureInfo(station, request.Timestamp));
 
         return (await Task.WhenAll(tasks))
             .Where(x => x is not null)
