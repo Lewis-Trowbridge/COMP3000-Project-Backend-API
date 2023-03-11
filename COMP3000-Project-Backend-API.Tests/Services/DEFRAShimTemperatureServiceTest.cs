@@ -17,7 +17,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
         };
 
 
-        
+
 
         [Fact]
         public async void DEFRAShimTemperatureService_Get_ReturnsDataFromServiceAsReadingInfo()

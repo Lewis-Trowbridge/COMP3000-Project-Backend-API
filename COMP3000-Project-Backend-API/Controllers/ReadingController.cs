@@ -11,20 +11,18 @@ namespace COMP3000_Project_Backend_API.Controllers;
 public class ReadingController : ControllerBase
 {
     private readonly IMetadataService _metadataService;
-    private readonly IAirQualityServiceFactory _airQualityServiceFactory;
-    private readonly ITemperatureService _temperatureService;
+    private readonly IReadingServiceFactory _readingServiceFactory;
 
-    public ReadingController(IMetadataService metadataService, IAirQualityServiceFactory airQualityServiceFactory, ITemperatureService temperatureService)
+    public ReadingController(IMetadataService metadataService, IReadingServiceFactory readingServiceFactory)
     {
         _metadataService = metadataService;
-        _airQualityServiceFactory = airQualityServiceFactory;
-        _temperatureService = temperatureService;
+        _readingServiceFactory = readingServiceFactory;
     }
 
     [HttpGet("/airquality")]
     public async Task<ReadingInfo[]> GetAirQuality([FromQuery] ReadingRequest request)
     {
-        var service = _airQualityServiceFactory.GetAirQualityService(request.Timestamp);
+        var service = _readingServiceFactory.GetAirQualityService(request.Timestamp);
         var stations = await _metadataService.GetAsync(request.Bbox!);
 
         var tasks = stations.Select(station => service.GetAirQualityInfo(station, request.Timestamp));
@@ -37,9 +35,10 @@ public class ReadingController : ControllerBase
     [HttpGet("/temperature")]
     public async Task<ReadingInfo[]> GetTemperature([FromQuery] ReadingRequest request)
     {
+        var service = _readingServiceFactory.GetTemperatureService(request.Timestamp);
         var stations = await _metadataService.GetAsync(request.Bbox!);
 
-        var tasks = stations.Select(station => _temperatureService.GetTemperatureInfo(station, request.Timestamp));
+        var tasks = stations.Select(station => service.GetTemperatureInfo(station, request.Timestamp));
 
         return (await Task.WhenAll(tasks))
             .Where(x => x is not null)

@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using COMP3000_Project_Backend_API.Models;
-using COMP3000_Project_Backend_API.Models.External.Shim;
+﻿using COMP3000_Project_Backend_API.Models.External.Shim;
 using COMP3000_Project_Backend_API.Models.MongoDB;
 using COMP3000_Project_Backend_API.Utils;
 

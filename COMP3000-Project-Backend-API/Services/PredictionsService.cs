@@ -5,17 +5,19 @@ using COMP3000_Project_Backend_API.Models.MongoDB;
 
 namespace COMP3000_Project_Backend_API.Services
 {
-    public class PredictionsAirQualityService : IAirQualityService
+    public class PredictionsService : IAirQualityService, ITemperatureService
     {
         public static string BaseAddress { get; } = "https://predictions-xsji6nno4q-ew.a.run.app";
         public static string Unit = "PM2.5";
         public static string LicenseInfo = "\u00A9 Lewis Trowbridge 2023";
 
         private readonly HttpClient _httpClient;
+        private readonly IDEFRAShimService _shimService;
 
-        public PredictionsAirQualityService(HttpClient httpClient)
+        public PredictionsService(HttpClient httpClient, IDEFRAShimService shimService)
         {
             _httpClient = httpClient;
+            _shimService = shimService;
         }
 
         public async Task<ReadingInfo?> GetAirQualityInfo(DEFRAMetadata metadata, DateTime? timestamp)
@@ -52,6 +54,11 @@ namespace COMP3000_Project_Backend_API.Services
                 }
                 return null;
             }
+        }
+
+        public async Task<ReadingInfo?> GetTemperatureInfo(DEFRAMetadata metadata, DateTime? timestamp)
+        {
+            throw new NotImplementedException();
         }
     }
 }

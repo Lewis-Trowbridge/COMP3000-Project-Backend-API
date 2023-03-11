@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using System.Text.Json;
 using COMP3000_Project_Backend_API.Models;
 using COMP3000_Project_Backend_API.Models.External.Predictions;
@@ -19,7 +18,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
         {
             var testStationId = "test";
             var testDateTime = DateTimeOffset.Parse("01-01-2022 04:00:00");
-            var testAddress = PredictionsAirQualityService.BaseAddress + "/v1/models/airquality:predict";
+            var testAddress = PredictionsService.BaseAddress + "/v1/models/airquality:predict";
             var testMetadata = new DEFRAMetadata()
             {
                 Id = testStationId,
@@ -37,9 +36,9 @@ namespace COMP3000_Project_Backend_API.Tests.Services
                 .ReturnsResponse(System.Net.HttpStatusCode.OK, JsonSerializer.Serialize(ValidResponse));
 
             var client = handler.CreateClient();
-            client.BaseAddress = new Uri(PredictionsAirQualityService.BaseAddress);
+            client.BaseAddress = new Uri(PredictionsService.BaseAddress);
 
-            var service = new PredictionsAirQualityService(client);
+            var service = new PredictionsService(client, Mock.Of<IDEFRAShimService>());
 
             var actual = await service.GetAirQualityInfo(testMetadata, testDateTime.UtcDateTime);
 
@@ -61,7 +60,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
                 SiteName = testStationId,
                 Coords = new double[] { 0, 0 }
             };
-            var service = new PredictionsAirQualityService(Mock.Of<HttpClient>());
+            var service = new PredictionsService(Mock.Of<HttpClient>(), Mock.Of<IDEFRAShimService>());
 
             var actual = await service.GetAirQualityInfo(testMetadata, null);
 
@@ -73,7 +72,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
         {
             var testStationId = "test";
             var testDateTime = DateTimeOffset.Parse("01-01-2022 04:00:00");
-            var testAddress = PredictionsAirQualityService.BaseAddress + "/v1/models/airquality:predict";
+            var testAddress = PredictionsService.BaseAddress + "/v1/models/airquality:predict";
             var testMetadata = new DEFRAMetadata()
             {
                 Id = testStationId,
@@ -85,19 +84,19 @@ namespace COMP3000_Project_Backend_API.Tests.Services
                 .ReturnsResponse(System.Net.HttpStatusCode.OK, JsonSerializer.Serialize(ValidResponse));
 
             var client = handler.CreateClient();
-            client.BaseAddress = new Uri(PredictionsAirQualityService.BaseAddress);
+            client.BaseAddress = new Uri(PredictionsService.BaseAddress);
 
             var expected = new ReadingInfo()
             {
                 Type = InfoType.Predicted,
                 Timestamp = testDateTime.UtcDateTime,
                 Value = Convert.ToSingle(ValidOutput),
-                Unit = PredictionsAirQualityService.Unit,
-                LicenseInfo = PredictionsAirQualityService.LicenseInfo,
+                Unit = PredictionsService.Unit,
+                LicenseInfo = PredictionsService.LicenseInfo,
                 Station = testMetadata.ToStation(),
             };
 
-            var service = new PredictionsAirQualityService(client);
+            var service = new PredictionsService(client, Mock.Of<IDEFRAShimService>());
 
             var actual = await service.GetAirQualityInfo(testMetadata, testDateTime.UtcDateTime);
 
