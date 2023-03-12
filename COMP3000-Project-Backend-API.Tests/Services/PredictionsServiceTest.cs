@@ -112,7 +112,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
             var testDateTime = DateTime.Parse("01-01-2022 04:00:00");
             var expectedTimestamp = 1641009600;
             var testAddress = PredictionsService.BaseAddress + "/v1/models/temperature:predict";
-            
+
             var testMetadata = new DEFRAMetadata()
             {
                 Id = testStationId,
@@ -147,7 +147,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
                     fakeShimResponse.wd.Value,
                     fakeShimResponse.ws.Value,
                     testMetadata.Coords[1],
-                    testMetadata.Coords[0] 
+                    testMetadata.Coords[0]
                 }}
             };
             var handler = new Mock<HttpMessageHandler>();
@@ -198,7 +198,7 @@ namespace COMP3000_Project_Backend_API.Tests.Services
             var mockShimservice = new Mock<IDEFRAShimService>();
             mockShimservice.Setup(x => x.GetDataFromShim(testMetadata, null))
                 .ReturnsAsync(fakeShimResponse);
-            
+
             var handler = new Mock<HttpMessageHandler>();
             handler.SetupRequest(HttpMethod.Post, testAddress)
                 .ReturnsResponse(System.Net.HttpStatusCode.OK, JsonSerializer.Serialize(ValidResponse));
