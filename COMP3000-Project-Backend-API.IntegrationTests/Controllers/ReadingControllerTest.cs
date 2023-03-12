@@ -37,8 +37,8 @@ namespace COMP3000_Project_Backend_API.IntegrationTests.Controllers
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddSingleton(airQualityService);
             var serviceProvider = serviceCollection.BuildServiceProvider();
-            var airQualityFactory = new AirQualityServiceFactory(serviceProvider, new SystemDateTimeProvider());
-            var controller = new ReadingController(metadataService, airQualityFactory, Mock.Of<ITemperatureService>());
+            var airQualityFactory = new ReadingServiceFactory(serviceProvider, new SystemDateTimeProvider());
+            var controller = new ReadingController(metadataService, airQualityFactory);
 
             var request = new ReadingRequest()
             {

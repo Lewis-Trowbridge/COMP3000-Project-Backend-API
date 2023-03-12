@@ -33,16 +33,18 @@ builder.Services.AddHttpClient<DEFRACsvService>(client =>
 {
     client.BaseAddress = new Uri(DEFRACsvService.DEFRABaseAddress);
 });
-builder.Services.AddHttpClient<PredictionsAirQualityService>(client =>
+builder.Services.AddHttpClient<PredictionsService>(client =>
 {
-    client.BaseAddress = new Uri(PredictionsAirQualityService.BaseAddress);
+    client.BaseAddress = new Uri(PredictionsService.BaseAddress);
 });
-builder.Services.AddHttpClient<ITemperatureService, DEFRAShimTemperatureService>(client =>
-    client.BaseAddress = new Uri(DEFRAShimTemperatureService.BaseAddress)
+builder.Services.AddHttpClient<IDEFRAShimService, DEFRAShimService>(client =>
+    client.BaseAddress = new Uri(DEFRAShimService.BaseAddress)
 );
 
+builder.Services.AddSingleton<DEFRAShimTemperatureService>();
+
 builder.Services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
-builder.Services.AddSingleton<IAirQualityServiceFactory, AirQualityServiceFactory>();
+builder.Services.AddSingleton<IReadingServiceFactory, ReadingServiceFactory>();
 
 var app = builder.Build();
 
