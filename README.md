@@ -1,4 +1,6 @@
 # COMP3000 Project - Backend API
+#### Project title: EDDAP (Environmental Data Display and Predictions)
+#### Supervisor: Dr David Walker
 
 ## What is this?
 
@@ -37,4 +39,14 @@ This service uses C#'s ASP.NET framework to provide a REST API for obtaining env
 - Service makes use of the MVC and strategy patterns
 - Service uses "Service" classes to perform heavy-duty work, while controllers handle coordination of request details
 - Integration and functional tests are performed using an in-memory MongoDB instance
+
+
+## Project vision
+
+- For: researchers and the public
+- Who: need a better understanding of the climate crisis
+- The: environmental data dashboard
+- Is a: web application dashboard
+- That: can make predictions for the future of the environment and display environmental data such as air pollution in an easy-to-understand format
+
 
